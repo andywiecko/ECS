@@ -1,0 +1,20 @@
+{
+    "name": "andywiecko.ECS",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Burst",
+        "Unity.Mathematics",
+        "Unity.Jobs",
+        "Unity.Collections",
+        "andywiecko.BurstCollections"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

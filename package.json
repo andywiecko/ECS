@@ -1,0 +1,24 @@
+{
+    "name": "com.andywiecko.ecs",
+    "version": "0.1.0",
+    "displayName": "ECS",
+    "description": "Custom Entity Component System architecture designed to work with \"large\" entities.",
+    "unity": "2021.2",
+    "unityRelease": "5f1",
+    "keywords": [
+        "ECS"
+    ],
+    "author": {
+        "name": "Andrzej Więckowski",
+        "email": "andywiecko@gmail.com",
+        "url": "https://andywiecko.github.io/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/andywiecko/ECS"
+    },
+    "dependencies": {
+        "com.unity.burst": "1.6.3",
+        "com.unity.jobs": "0.11.0-preview.6"
+    }
+}
