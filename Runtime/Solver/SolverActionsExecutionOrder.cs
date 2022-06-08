@@ -188,8 +188,7 @@ namespace andywiecko.ECS
 
             foreach (var (method, type) in actionOrder[SolverAction.OnScheduling])
             {
-                var system = world.SystemsRegistry.SystemOf(type);
-                if (system != null)
+                if(world.SystemsRegistry.TryGetSystem(type, out var system))
                 {
                     solver.OnScheduling += () => method.Invoke(system, default);
                 }
@@ -197,8 +196,7 @@ namespace andywiecko.ECS
 
             foreach (var (method, type) in actionOrder[SolverAction.OnJobsCompletion])
             {
-                var system = world.SystemsRegistry.SystemOf(type);
-                if (system != null)
+                if (world.SystemsRegistry.TryGetSystem(type, out var system))
                 {
                     solver.OnJobsComplete += () => method.Invoke(system, default);
                 }
