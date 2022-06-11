@@ -2,7 +2,7 @@
 
 Custom Entity Component System architecture designed to work with "large" entities.
 
-## Package summary
+**Package summary:**
 
 - Skeleton of the ECS architecture model designed especially for large entities (e.g. entities which contains thousand of triangles etc). 
 - Package forces to keep your logic and data separate and maintain the ECS design pattern.
@@ -13,7 +13,22 @@ Custom Entity Component System architecture designed to work with "large" entiti
 - Basic implementations of the `World`, `Solver`, `Entity`, `BaseComponent`, `BaseSystem<T>`, `SolverJobsOrder`, `SolverActionsOrder`, and more. 
 - *static*less features, all objects used in the engine are not static (except utils/extensions).
 
-**TODO:** table of contents here?
+## Table of Contents
+
+- [ECS](#ecs)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [World](#world)
+  - [Solver](#solver)
+  - [Entities](#entities)
+  - [Components](#components)
+  - [Systems](#systems)
+  - [Configurations](#configurations)
+  - [Components tuples](#components-tuples)
+  - [Roadmap](#roadmap)
+    - [v1.0.0](#v100)
+    - [v2.0.0](#v200)
+  - [Dependencies](#dependencies)
 
 ## Introduction
 
@@ -23,9 +38,9 @@ In principle the pattern is rather simple.
 Entities contain components, components contain data, and systems modify the data in the components.
 The key feature of the pattern is that logic and data are separated, i.e. all data can be found at components, and logics at systems.
 
-This package was build as a core feature of the [PBD2D][pbd2d] engine. **TODO:** ADD FOOTNOTE HERE
+This package was build as a core feature of the [PBD2D][pbd2d] engine.
 It is designed to work with large entities, i.e. entities which holds large amount of data.
-For small entities up to a few bytes, I could recommend using the `Unity.Entities`.
+For small entities up to a few bytes, I could recommend using the [`Unity.Entities`](https://docs.unity3d.com/Packages/com.unity.entities@0.50/manual/index.html).
 
 ## World
 
@@ -89,10 +104,11 @@ public class MyEntity : Entity
 %%{init: {"theme": "neutral", "flowchart": { "useMaxwidth": false}}}%%
 
 graph TB
-
-e[Entity] --> c1[Component A];
-e --> c2[Component B];
-e --> c3[Component C];
+subgraph Entity
+    c1[<b>C1</b> component];
+    c2[<b>C2</b> component];
+    c3[<b>C3</b> component];
+end
 
 ```
 
@@ -124,6 +140,93 @@ public class MyComponent : BaseComponent, IMyComponent
 ```
 
 ## Systems
+
+The all logic related to components data should be included in systems.
+It is recommended to implement abstract class `BaseSystem<T>` or `BaseSystemWithConfiguration<T, V>, however,
+one can implement custom system by implementing `ISystem` interface.
+
+When one does not require some configuration, use `BaseSystem<T>` where `T` corresponds to interface assigned from `IComponent`.
+In the following snippet the system will schedule selected jobs on all  `IMyComponent`s objects from the `World` for which system is attached to
+
+```csharp
+public class MySystem : BaseSystem<IMyComponent>
+{
+    public override JobHandle Schedule(JobHandle dependencies)
+    {
+        foreach(var component in References)
+        {
+            // ...
+        }
+
+        return dependencies
+    }
+}
+```
+
+Sometimes one needs to provide some global configurations to the system (e.g. gravity).
+More information related to configurations can be found at [#configurations](#configurations).
+Assuming that there is defined configuration `SimulationConfiguration`,
+the system can implement `BaseSystemWithConfiguration`
+
+```csharp
+public class MySystemWithConfiguration : BaseSystemWithConfiguration<IMyComponent, SimulationConfiguration>
+{
+    public override JobHandle Schedule(JobHandle dependencies)
+    {
+        foreach(var component in References)
+        {
+            var c = Configuration;
+            // ...
+        }
+
+        return dependencies
+    }
+}
+```
+
+However, `BaseSystemWithConfiguration<T, V>` is not required to use configurations which are availible in the `World`, it can be accessed from `BaseSystem<T>` too.
+`BaseSystemWithConfiguration<T, V>` just helps the developers to easily see what is required by the given system.
+
+```csharp
+public class MySystemWithConfiguration : BaseSystem<IMyComponent>
+{
+    public override JobHandle Schedule(JobHandle dependencies)
+    {
+        foreach(var component in References)
+        {
+            var c = World.ConfigurationsRegistry.Get<SimulationConfiguration>();
+            // ...
+        }
+
+        return dependencies
+    }
+}
+```
+
+```mermaid
+%%{init: {"theme": "neutral", "flowchart": {"curve": "basis", "useMaxwidth": false}}}%%
+
+graph LR
+subgraph World
+subgraph Entity
+    c1[<b>C1</b> component];
+    c2[<b>C2</b> component];
+    c3[<b>C3</b> component];
+end
+
+    g[<b>G</b> configuration]
+    s["System<<b>C, G</b>>"];
+end
+
+c2 --> s --> c2;
+g --> s;
+```
+
+**TODO** 
+- solver action
+- fake systems
+
+
 
 ## Configurations
 
@@ -161,5 +264,9 @@ Currently, the package supports only two argument tuples.
 - [ ] Scheduling jobs from job.
 
 ## Dependencies
+
+- [`Unity.Burst`](https://docs.unity3d.com/Packages/com.unity.burst@1.8/manual/index.html)
+- [`Unity.Collections`](https://docs.unity3d.com/Packages/com.unity.collections@1.2/manual/index.html)
+- [`andywiecko.BurstCollections`](https://github.com/andywiecko/BurstCollections)
 
 [pbd2d]:https://github.com/andywiecko/PBD2D
