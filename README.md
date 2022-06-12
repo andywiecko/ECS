@@ -4,7 +4,7 @@ Custom Entity Component System architecture designed to work with "large" entiti
 
 **Package summary:**
 
-- Skeleton of the ECS architecture model designed especially for large entities (e.g. entities which contains thousand of triangles etc). 
+- Skeleton of the ECS architecture model designed especially for large entities (e.g. entities which contain thousand of triangles etc). 
 - Package forces to keep your logic and data separate and maintain the ECS design pattern.
 - `Unity.Burst` friendly systems.
 - Easily customizable engine. 
@@ -32,22 +32,21 @@ Custom Entity Component System architecture designed to work with "large" entiti
 
 ## Introduction
 
-The package implements custom approach to the [ECS design pattern](https://en.wikipedia.org/wiki/Entity_component_system).
+The package implements a custom approach to the [ECS design pattern](https://en.wikipedia.org/wiki/Entity_component_system).
 ECS stands for **_e_**_ntity_ **_c_**_omponent_ **_s_**_ystem_.
-In principle the pattern is rather simple.
+In principle, the pattern is rather simple.
 Entities contain components, components contain data, and systems modify the data in the components.
-The key feature of the pattern is that logic and data are separated, i.e. all data can be found at components, and logics at systems.
+The key feature of the pattern is that logic and data are separated, i.e. all data can be found in components, and logic in systems.
 
-This package was build as a core feature of the [PBD2D][pbd2d] engine.
-It is designed to work with large entities, i.e. entities which holds large amount of data.
+This package was built as a core feature of the [PBD2D][pbd2d] engine.
+It is designed to work with large entities, i.e. entities that hold a large amount of data.
 For small entities up to a few bytes, I could recommend using the [`Unity.Entities`](https://docs.unity3d.com/Packages/com.unity.entities@0.50/manual/index.html).
 
 ## World
 
 The main part of the framework is the `World`.
-`World` can be considered as data base, a container for all data injected into the simulation.
+`World` can be considered as database, a container for all data injected into the simulation.
 It contains information about registered components, set configurations, and enabled systems. 
-
 
 ```mermaid
 %%{init: {"theme": "neutral", "flowchart": {"curve": "stepBefore", "useMaxwidth": false}}}%%
@@ -64,7 +63,7 @@ c[Configurations Registry]
 
 ## Solver
 
-At `Solver` one can configure execution order of the systems by passing the proper `ScriptableObject` with configuration, namely `SolverJobsOrder` and `SolverActionsOrder`.
+At `Solver` one can configure the execution order of the systems by passing the proper `ScriptableObject` with configuration, namely `SolverJobsOrder` and `SolverActionsOrder`.
 There are available default implementations of those, however, 
 one can find more complex example at [PBD2D][pbd2d]
 
@@ -81,17 +80,10 @@ end
 c[Jobs Order<br>Actions Order] --> s
 ```
 
-- `Entity`: `MonoBehaviour` for which one attaches components.
-- `BaseComponent`: component where the data related to `Entity` live.
-- `BaseSystem<T>`: grabs all the objects of type `T` from the `World` and perform selected operation with this. 
-- `IConfiguration`: implement the interface and add "global" configuration of your `World`.
-- `ComponentsTuple<T1, T2>`, i.e. component which is automagicaly created/destroyed if certain components of type `T1`, `T2` are added to the `World`
-
-
 ## Entities
 
 Entities are just `MonoBehaviour`s to which one attaches the components.
-To derive new entity implement abstract `Entity` class.
+To derive new entity implement the abstract `Entity` class.
 
 ```csharp
 public class MyEntity : Entity
@@ -141,12 +133,12 @@ public class MyComponent : BaseComponent, IMyComponent
 
 ## Systems
 
-The all logic related to components data should be included in systems.
-It is recommended to implement abstract class `BaseSystem<T>` or `BaseSystemWithConfiguration<T, V>, however,
-one can implement custom system by implementing `ISystem` interface.
+All logic related to components data should be included in systems.
+It is recommended to implement the abstract class `BaseSystem<T>` or `BaseSystemWithConfiguration<T, V>, however,
+one can implement a custom system by implementing the `ISystem` interface.
 
-When one does not require some configuration, use `BaseSystem<T>` where `T` corresponds to interface assigned from `IComponent`.
-In the following snippet the system will schedule selected jobs on all  `IMyComponent`s objects from the `World` for which system is attached to
+When one does not require some configuration, use `BaseSystem<T>` where `T` corresponds to the interface assigned from `IComponent`.
+In the following snippet, the system schedules selected jobs on all  `IMyComponent`s objects from the `World` for which the system is attached to
 
 ```csharp
 public class MySystem : BaseSystem<IMyComponent>
@@ -165,7 +157,7 @@ public class MySystem : BaseSystem<IMyComponent>
 
 Sometimes one needs to provide some global configurations to the system (e.g. gravity).
 More information related to configurations can be found at [#configurations](#configurations).
-Assuming that there is defined configuration `SimulationConfiguration`,
+Assuming that `SimulationConfiguration` is defined configuration,
 the system can implement `BaseSystemWithConfiguration`
 
 ```csharp
@@ -184,7 +176,7 @@ public class MySystemWithConfiguration : BaseSystemWithConfiguration<IMyComponen
 }
 ```
 
-However, `BaseSystemWithConfiguration<T, V>` is not required to use configurations which are availible in the `World`, it can be accessed from `BaseSystem<T>` too.
+However, `BaseSystemWithConfiguration<T, V>` is not required to use configurations that are available in the `World`, it can be accessed from `BaseSystem<T>` too.
 `BaseSystemWithConfiguration<T, V>` just helps the developers to easily see what is required by the given system.
 
 ```csharp
@@ -256,6 +248,7 @@ Currently, the package supports only two argument tuples.
 
 ### v1.0.0
 
+- [ ] A few tests...
 - [ ] Defaults impl of the scriptable objects.
 - [ ] Editors utilities and editors for base components.
 
