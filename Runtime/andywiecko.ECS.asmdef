@@ -2,10 +2,7 @@
     "name": "andywiecko.ECS",
     "rootNamespace": "",
     "references": [
-        "Unity.Burst",
-        "Unity.Mathematics",
         "Unity.Jobs",
-        "Unity.Collections",
         "andywiecko.BurstCollections"
     ],
     "includePlatforms": [],
