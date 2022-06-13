@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace andywiecko.ECS
 {
@@ -16,7 +17,13 @@ namespace andywiecko.ECS
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
+#if UNITY_EDITOR
                 foreach (var type in assembly.GetTypes())
+#else
+                foreach (var type in assembly
+                    .GetTypes()
+                    .Where(i => i.GetCustomAttributes<FakeAttribute>().Count() == 0))
+#endif
                 {
                     RegisterTypeInterfaces(type);
                 }
