@@ -41,7 +41,7 @@ namespace andywiecko.ECS
         {
             foreach (var t in ISystemUtils.Types)
             {
-                var s = Activator.CreateInstance(t) as ISystem;
+                var s = Activator.CreateInstance(t) as BaseSystem;
                 s.World = World;
                 systems.Add(t, s);
             }
