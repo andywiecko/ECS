@@ -11,6 +11,7 @@ namespace andywiecko.ECS.Editor
         public static readonly IReadOnlyDictionary<Type, string> TypeToGuid;
         public static readonly IReadOnlyDictionary<string, Type> GuidToType;
         public static readonly IReadOnlyDictionary<Assembly, IReadOnlyList<Type>> AssemblyToTypes;
+        public static readonly IReadOnlyDictionary<Type, CategoryAttribute> TypeToCategory;
 
         static ISystemUtils()
         {
@@ -24,6 +25,11 @@ namespace andywiecko.ECS.Editor
             Types = AssemblyToTypes
                 .SelectMany(i => i.Value)
                 .ToArray();
+
+            TypeToCategory = Types
+                .Select(i => (type: i, category: i
+                    .GetCustomAttribute<CategoryAttribute>() ?? new CategoryAttribute("Others")))
+                .ToDictionary(i => i.type, i => i.category);
 
             var typeToGuid = new Dictionary<Type, string>();
             var guidToType = new Dictionary<string, Type>();
