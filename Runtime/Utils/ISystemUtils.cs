@@ -1,33 +1,32 @@
-using andywiecko.ECS.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEditor;
 
-namespace andywiecko.ECS
+namespace andywiecko.ECS.Editor
 {
     public static class ISystemUtils
     {
-        public static readonly Type[] Types;
+        public static readonly IReadOnlyList<Type> Types;
         public static readonly IReadOnlyDictionary<Type, string> TypeToGuid;
         public static readonly IReadOnlyDictionary<string, Type> GuidToType;
+        public static readonly IReadOnlyDictionary<Assembly, IReadOnlyList<Type>> AssemblyToTypes;
 
         static ISystemUtils()
         {
-            Types = TypeCache
-                .GetTypesDerivedFrom<ISystem>().ToArray()
-                .Where(s => !s.IsAbstract && s.GetCustomAttributes<FakeSystemAttribute>().Count() == 0)
+            AssemblyToTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .Select(i => (assembly: i, types: i.GetTypes()
+                    .Where(i => !i.IsAbstract)
+                    .Where(i => typeof(ISystem).IsAssignableFrom(i))
+                    .ToArray() as IReadOnlyList<Type>))
+                .ToDictionary(i => i.assembly, i => i.types);
+
+            Types = AssemblyToTypes
+                .SelectMany(i => i.Value)
                 .ToArray();
 
             var typeToGuid = new Dictionary<Type, string>();
             var guidToType = new Dictionary<string, Type>();
-
-            void RegisterMapping(Type type, string guid)
-            {
-                typeToGuid.Add(type, guid);
-                guidToType.Add(guid, type);
-            }
 
             foreach (var type in Types)
             {
@@ -45,6 +44,12 @@ namespace andywiecko.ECS
 
             TypeToGuid = typeToGuid;
             GuidToType = guidToType;
+
+            void RegisterMapping(Type type, string guid)
+            {
+                typeToGuid.Add(type, guid);
+                guidToType.Add(guid, type);
+            }
         }
     }
 }

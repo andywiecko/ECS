@@ -9,21 +9,21 @@ namespace andywiecko.ECS
     {
         //public IdCounter<IEntity> EntityCounter { get; } = new(); // TODO: move to EntitesRegistry
         public ConfigurationsRegistry ConfigurationsRegistry { get; } = new();
-        public ComponentsRegistry ComponentsRegistry => componentsRegistry ??= new(assembliesNames.Select(i => Assembly.Load(i)));
+        public ComponentsRegistry ComponentsRegistry => componentsRegistry ??= new(TargetAssemblies.Select(i => Assembly.Load(i)));
         private ComponentsRegistry componentsRegistry;
         public SystemsRegistry SystemsRegistry { get; } = new();
+
+        [field: SerializeField, HideInInspector]
+        public string[] TargetAssemblies { get; private set; } = { };
 
 #if UNITY_EDITOR
         [SerializeField]
         private UnityEditorInternal.AssemblyDefinitionAsset[] targetAssemblies = { };
 #endif
 
-        [SerializeField, HideInInspector]
-        private string[] assembliesNames = { };
-
         private void OnValidate()
         {
-            assembliesNames = targetAssemblies?
+            TargetAssemblies = targetAssemblies?
                 .Where(i => i != null)
                 .Select(i => JObject.Parse(i.text)["name"].ToString()).ToArray();
         }

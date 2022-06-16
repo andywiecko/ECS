@@ -1,5 +1,8 @@
+using andywiecko.ECS.Editor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace andywiecko.ECS
@@ -58,7 +61,16 @@ namespace andywiecko.ECS
         private void OnValidate()
         {
             Systems.Clear();
-            foreach (var t in ISystemUtils.Types)
+
+            if (World == null)
+            {
+                return;
+            }
+
+            var types = World.TargetAssemblies
+                .SelectMany(i => ISystemUtils.AssemblyToTypes[Assembly.Load(i)]);
+
+            foreach (var t in types)
             {
                 SerializedTypeBoolTuple tuple = new() { type = new(t, ISystemUtils.TypeToGuid[t]) };
                 Systems.Add(tuple);
