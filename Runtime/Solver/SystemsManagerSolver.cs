@@ -18,10 +18,21 @@ namespace andywiecko.ECS
             [field: SerializeField, HideInInspector]
             public string Guid { get; private set; } = default;
 
+            [field: SerializeField, HideInInspector]
+            public string AssemblyQualifiedName { get; private set; } = default;
+
+            public Type Type => Type.GetType(AssemblyQualifiedName);
+
             public SerializedType2(Type t, string guid)
             {
-                tag = t.Name.ToNonPascal();
+                Validate(t);
                 Guid = guid;
+            }
+
+            public void Validate(Type t)
+            {
+                tag = t.Name.ToNonPascal();
+                AssemblyQualifiedName = t.AssemblyQualifiedName;
             }
         }
 
@@ -42,7 +53,7 @@ namespace andywiecko.ECS
 
         private void Awake()
         {
-            foreach (var t in ISystemUtils.Types)
+            foreach (var t in Systems.Select(t => t.type.Type))
             {
                 var s = Activator.CreateInstance(t) as BaseSystem;
                 s.World = World;
