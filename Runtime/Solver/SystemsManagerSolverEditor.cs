@@ -1,8 +1,6 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -13,108 +11,55 @@ namespace andywiecko.ECS.Editor
     [CustomEditor(typeof(SystemsManagerSolver))]
     public class SystemsManagerSolverEditor : UnityEditor.Editor
     {
-        private static readonly IReadOnlyDictionary<string, Dictionary<Type, string>> categoryToTypes;
-        private static readonly IReadOnlyDictionary<Type, string> typesToCategory;
-
-        static SystemsManagerSolverEditor()
-        {
-            var types = TypeCache.GetTypesDerivedFrom<ISystem>()
-                .Where(s => s.IsGenericType == false && s.IsAbstract == false);
-            var tmp = new Dictionary<string, Dictionary<Type, string>>();
-            var tmp3 = new Dictionary<Type, string>();
-            foreach (var type in types)
-            {
-                var name = type.GetCustomAttribute<AddComponentMenu>()?.componentMenu ?? type.Name;
-                var subnames = name.Split('/');
-
-                var typeName = subnames.Last();
-                var categoryName = subnames.Length >= 3 ? subnames[subnames.Length - 2] : "Others";
-                if (!tmp.TryGetValue(categoryName, out var typesToNames))
-                {
-                    typesToNames = new Dictionary<Type, string>();
-                    tmp.Add(categoryName, typesToNames);
-                }
-
-                typesToNames.Add(type, typeName);
-                tmp3.Add(type, categoryName);
-            }
-            categoryToTypes = tmp;
-            typesToCategory = tmp3;
-        }
-
-        private SystemsManagerSolver Target => target as SystemsManagerSolver;
-
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
+            var categories = new Dictionary<string, VisualElement>();
 
             root.Add(new IMGUIContainer(base.OnInspectorGUI));
 
-            var list = categoryToTypes.Keys.ToDictionary(i => i, i =>
-            {
-                var foldout = new Foldout()
-                {
-                    text = i,
-                    style = {
-                        color = new StyleColor(new Color(.678f, .847f, .902f)) ,
-                        unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold)
-                    }
-                };
-
-                return foldout;
-            });
-
-            foreach (var tuple in Target.Systems)
+            foreach (SerializedProperty i in serializedObject.FindProperty("<Systems>k__BackingField"))
             {
                 var line = new VisualElement()
                 {
                     style =
                     {
-                        flexDirection = FlexDirection.Row ,
+                        flexDirection = FlexDirection.Row,
                         unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Normal)
                     }
                 };
-                var toggle = new Toggle()
+
+                var valueProperty = i.FindPropertyRelative("value");
+                var valueField = new PropertyField(valueProperty);
+                valueField.label = "";
+
+                var typeProperty = i.FindPropertyRelative("type");
+                var typeField = new PropertyField(typeProperty);
+
+                var assemblyQualifiedName = typeProperty.FindPropertyRelative("<AssemblyQualifiedName>k__BackingField").stringValue;
+                var type = Type.GetType(assemblyQualifiedName);
+                var categoryName = ISystemUtils.TypeToCategory[type].Name;
+
+                line.Add(valueField);
+                line.Add(typeField);
+
+                if (!categories.TryGetValue(categoryName, out var category))
                 {
-                    value = tuple.value,
-                    style =
+                    categories[categoryName] = category = new Foldout()
                     {
-                        unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Normal),
-                        alignSelf = new StyleEnum<Align>(Align.FlexStart)
-                    }
-                };
-
-                toggle.RegisterValueChangedCallback(evt =>
-                {
-                    tuple.value = evt.newValue;
-                    serializedObject.ApplyModifiedProperties();
-                    EditorUtility.SetDirty(target);
-                });
-
-                var type = ISystemUtils.GuidToType[tuple.type.Guid];
-                var category = typesToCategory[type];
-                var element = list[category];
-                line.Add(toggle);
-
-                var path = AssetDatabase.GUIDToAssetPath(tuple.type.Guid);
-                var scriptField = new ObjectField()
-                {
-                    value = AssetDatabase.LoadAssetAtPath<MonoScript>(path),
-                    objectType = typeof(MonoScript),
-                };
-
-                //scriptField.Q<Label>().text = type.Name.ToNonPascal();
-
-                scriptField.Q(className: ObjectField.selectorUssClassName).SetEnabled(false);
-
-                line.Add(scriptField);
-
-                element.Add(line);
+                        text = categoryName,
+                        style = {
+                            color = new StyleColor(new Color(.678f, .847f, .902f)) ,
+                            unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold)
+                        }
+                    };
+                }
+                category.Add(line);
             }
 
-            foreach (var (i, ve) in list)
+            foreach (var c in categories.Values)
             {
-                root.Add(ve);
+                root.Add(c);
             }
 
             return root;
