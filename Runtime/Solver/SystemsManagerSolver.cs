@@ -10,36 +10,9 @@ namespace andywiecko.ECS
     public class SystemsManagerSolver : MonoBehaviour
     {
         [Serializable]
-        public class SerializedType2
-        {
-            [HideInInspector, SerializeField]
-            private string tag = "";
-
-            [field: SerializeField, HideInInspector]
-            public string Guid { get; private set; } = default;
-
-            [field: SerializeField, HideInInspector]
-            public string AssemblyQualifiedName { get; private set; } = default;
-
-            public Type Type => Type.GetType(AssemblyQualifiedName);
-
-            public SerializedType2(Type t, string guid)
-            {
-                Validate(t);
-                Guid = guid;
-            }
-
-            public void Validate(Type t)
-            {
-                tag = t.Name.ToNonPascal();
-                AssemblyQualifiedName = t.AssemblyQualifiedName;
-            }
-        }
-
-        [Serializable]
         public class SerializedTypeBoolTuple
         {
-            public SerializedType2 type;
+            public SerializedType type;
             public bool value = true;
         }
 
@@ -71,6 +44,7 @@ namespace andywiecko.ECS
 
         private void OnValidate()
         {
+            Debug.Log("Calling on validate...");
             Systems.Clear();
 
             if (World == null)

@@ -8,7 +8,6 @@ using System.Reflection;
 using UnityEditor;
 #endif
 using UnityEngine;
-using static andywiecko.ECS.SystemsManagerSolver;
 
 namespace andywiecko.ECS
 {
@@ -22,7 +21,7 @@ namespace andywiecko.ECS
         public string Name { get; private set; } = "";
 
         [field: HideInInspector, SerializeField]
-        public SerializedType2 SerializedType { get; private set; } = default;
+        public SerializedType SerializedType { get; private set; } = default;
 
 #if UNITY_EDITOR
         [SerializeField]
