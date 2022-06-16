@@ -1,22 +1,29 @@
-using andywiecko.ECS.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEditor;
 
-namespace andywiecko.ECS
+namespace andywiecko.ECS.Editor
 {
     public static class SolverActionUtils
     {
         public static readonly IReadOnlyDictionary<MethodInfo, Type> MethodToType;
         public static readonly IReadOnlyDictionary<Type, string> TypeToGuid;
         public static readonly IReadOnlyDictionary<string, Type> GuidToType;
+        public static readonly IReadOnlyDictionary<Assembly, IReadOnlyList<MethodInfo>> AssemblyToMethods;
 
         static SolverActionUtils()
         {
-            var methods = TypeCache
-                .GetMethodsWithAttribute<SolverActionAttribute>()
+            AssemblyToMethods = AppDomain.CurrentDomain.GetAssemblies()
+                .Select(i => (assembly: i, methods: i
+                    .GetTypes()
+                    .SelectMany(t => t.GetMethods())
+                    .Where(m => m.GetCustomAttributes<SolverActionAttribute>().Count() > 0)
+                    .ToArray() as IReadOnlyList<MethodInfo>)
+                ).ToDictionary(i => i.assembly, i => i.methods);
+
+            var methods = AssemblyToMethods.Values
+                .SelectMany(i => i)
                 .ToArray();
 
             var methodToType = new Dictionary<MethodInfo, Type>();
@@ -30,12 +37,6 @@ namespace andywiecko.ECS
             var guidToType = new Dictionary<string, Type>();
             var types = methodToType.Values.Distinct();
 
-            void RegisterMapping(Type type, string guid)
-            {
-                typeToGuid.Add(type, guid);
-                guidToType.Add(guid, type);
-            }
-
             foreach (var type in types)
             {
                 var guid = AssetDatabaseUtils.TryGetTypeGUID(type);
@@ -46,13 +47,19 @@ namespace andywiecko.ECS
                 }
                 else
                 {
-                    throw new NotImplementedException("This Type-GUID case is not handled yet.");
+                    throw new NotImplementedException($"This Type-GUID case is not handled yet ({type}).");
                 }
             }
 
             MethodToType = methodToType;
             TypeToGuid = typeToGuid;
             GuidToType = guidToType;
+
+            void RegisterMapping(Type type, string guid)
+            {
+                typeToGuid.Add(type, guid);
+                guidToType.Add(guid, type);
+            }
         }
     }
 }

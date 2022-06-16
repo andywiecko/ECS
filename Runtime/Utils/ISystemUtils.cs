@@ -38,7 +38,7 @@ namespace andywiecko.ECS.Editor
                 }
                 else
                 {
-                    throw new NotImplementedException("This Type-GUID case is not handled yet.");
+                    throw new NotImplementedException($"This Type-GUID case is not handled yet ({type}).");
                 }
             }
 

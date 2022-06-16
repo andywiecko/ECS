@@ -1,3 +1,5 @@
+using andywiecko.ECS.Editor;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,9 +73,8 @@ namespace andywiecko.ECS
         public UnconfiguredMethod(MethodInfo method, Type type, string guid) : this(new(method, type, guid)) { }
     }
 
-    [CreateAssetMenu(fileName = "SolverActionsExecutionOrder",
-        menuName = "PBD2D/Solver/Solver Actions Execution Order")]
-    public class SolverActionsExecutionOrder : SolverActionsOrder
+    [CreateAssetMenu(fileName = "DefaultSolverActionsOrder", menuName = "ECS/Solver/Default Solver Actions Order")]
+    public class DefaultSolverActionsOrder : SolverActionsOrder
     {
         private List<SerializedMethod> GetListAtAction(SolverAction action) => action switch
         {
@@ -119,6 +120,15 @@ namespace andywiecko.ECS
             .Select(i => i.Value)
             .ToList();
 
+        [field: SerializeField, HideInInspector]
+        public string[] TargetAssemblies { get; private set; } = { };
+
+#if UNITY_EDITOR
+        [SerializeField]
+        private UnityEditorInternal.AssemblyDefinitionAsset[] targetAssemblies = { };
+#endif
+
+        [Space(50)]
         [SerializeField] private List<SerializedMethod> onScheduling = new();
         [SerializeField] private List<SerializedMethod> onJobsCompletion = new();
 
@@ -128,12 +138,19 @@ namespace andywiecko.ECS
 
         private void Awake() => ValidateMethods();
 
-        private void OnValidate() => ValidateMethods();
+        private void OnValidate()
+        {
+            TargetAssemblies = targetAssemblies?
+                .Where(i => i != null)
+                .Select(i => JObject.Parse(i.text)["name"].ToString()).ToArray();
+
+            ValidateMethods();
+        }
 
         private void ValidateMethods()
         {
             // HACK:
-            //   For unknown reason static dicts don't survive when saving assest,
+            //   For unknown reason static dicts don't survive when saving asset,
             //   but OnValidate is called during save.
             if (SolverActionUtils.GuidToType.Count == 0)
             {
@@ -160,7 +177,13 @@ namespace andywiecko.ECS
 
             undefinedMethods.Clear();
             var serializedMethods = GetSerializedMethods();
-            foreach (var (m, t) in SolverActionUtils.MethodToType)
+
+            var methodsToTypes = TargetAssemblies
+                .Select(i => Assembly.Load(i))
+                .SelectMany(i => SolverActionUtils.AssemblyToMethods[i])
+                .Select(i => (methodInfo: i, type: SolverActionUtils.MethodToType[i]));
+
+            foreach (var (m, t) in methodsToTypes)
             {
                 if (!serializedMethods.Contains((m, t)))
                 {
@@ -188,7 +211,7 @@ namespace andywiecko.ECS
 
             foreach (var (method, type) in actionOrder[SolverAction.OnScheduling])
             {
-                if(world.SystemsRegistry.TryGetSystem(type, out var system))
+                if (world.SystemsRegistry.TryGetSystem(type, out var system))
                 {
                     solver.OnScheduling += () => method.Invoke(system, default);
                 }
