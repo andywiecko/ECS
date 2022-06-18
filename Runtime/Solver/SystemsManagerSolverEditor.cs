@@ -22,6 +22,7 @@ namespace andywiecko.ECS.Editor
 
             var worldProperty = serializedObject.FindProperty("<World>k__BackingField");
             var worldField = new PropertyField(worldProperty);
+            worldField.SetEnabled(!Application.isPlaying);
             root.Add(worldField);
 
             var categories = new Dictionary<string, VisualElement>();
