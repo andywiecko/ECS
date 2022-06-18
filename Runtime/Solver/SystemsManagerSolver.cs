@@ -16,7 +16,7 @@ namespace andywiecko.ECS
             public bool value = true;
         }
 
-        [field: SerializeField]
+        [field: SerializeField, HideInInspector]
         public World World { get; private set; } = default;
 
         [field: SerializeField, HideInInspector]
@@ -44,7 +44,6 @@ namespace andywiecko.ECS
 
         private void OnValidate()
         {
-            Debug.Log("Calling on validate...");
             Systems.Clear();
 
             if (World == null)
