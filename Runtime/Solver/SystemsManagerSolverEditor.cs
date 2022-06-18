@@ -11,6 +11,8 @@ namespace andywiecko.ECS.Editor
     [CustomEditor(typeof(SystemsManagerSolver))]
     public class SystemsManagerSolverEditor : UnityEditor.Editor
     {
+        public SystemsManagerSolver Target => target as SystemsManagerSolver;
+
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
@@ -66,6 +68,14 @@ namespace andywiecko.ECS.Editor
                 var assemblyQualifiedName = typeProperty.FindPropertyRelative("<AssemblyQualifiedName>k__BackingField").stringValue;
                 var type = Type.GetType(assemblyQualifiedName);
                 var categoryName = ISystemUtils.TypeToCategory[type].Name;
+
+                valueField.RegisterCallback<ChangeEvent<bool>>(evt =>
+                {
+                    if (Application.isPlaying)
+                    {
+                        Target.SetSystemActive(type, evt.newValue);
+                    }
+                });
 
                 line.Add(valueField);
                 line.Add(typeField);
