@@ -6,16 +6,15 @@ namespace andywiecko.ECS.Editor.Tests
 {
     public class ComponentsRegistryEditorTests
     {
-        [Fake] private interface IFake1 : IComponent { }
-        [Fake] private interface IFake2 : IComponent { }
+        private interface IFake1 : IComponent { }
+        private interface IFake2 : IComponent { }
 
-        [Fake]
         private class Fake1 : IFake1
         {
             public Id<IComponent> ComponentId => default;
         }
 
-        [Fake] private class Fake2 : Fake1, IFake2 { }
+        private class Fake2 : Fake1, IFake2 { }
 
         private ComponentsRegistry registry;
 
