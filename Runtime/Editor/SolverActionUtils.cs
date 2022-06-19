@@ -7,6 +7,7 @@ namespace andywiecko.ECS.Editor
 {
     public static class SolverActionUtils
     {
+        public static readonly IReadOnlyList<MethodInfo> Methods;
         public static readonly IReadOnlyDictionary<MethodInfo, Type> MethodToType;
         public static readonly IReadOnlyDictionary<Type, string> TypeToGuid;
         public static readonly IReadOnlyDictionary<string, Type> GuidToType;
@@ -22,44 +23,19 @@ namespace andywiecko.ECS.Editor
                     .ToArray() as IReadOnlyList<MethodInfo>)
                 ).ToDictionary(i => i.assembly, i => i.methods);
 
-            var methods = AssemblyToMethods.Values
+            Methods = AssemblyToMethods.Values
                 .SelectMany(i => i)
                 .ToArray();
 
-            var methodToType = new Dictionary<MethodInfo, Type>();
-            foreach (var m in methods)
-            {
-                var t = m.ReflectedType;
-                methodToType.Add(m, t);
-            }
+            MethodToType = Methods.ToDictionary(i => i, i => i.ReflectedType);
 
-            var typeToGuid = new Dictionary<Type, string>();
-            var guidToType = new Dictionary<string, Type>();
-            var types = methodToType.Values.Distinct();
+            TypeToGuid = MethodToType.Values
+                .Distinct()
+                .Select(i => (type: i, guid: GuidUtils.TypeToGuid.TryGetValue(i, out var g) ? g : default))
+                .Where(i => i.guid != null) // TODO: add warning here when guid is not found?
+                .ToDictionary(i => i.type, i => i.guid);
 
-            foreach (var type in types)
-            {
-                var guid = AssetDatabaseUtils.TryGetTypeGUID(type);
-
-                if (guid is string)
-                {
-                    RegisterMapping(type, guid);
-                }
-                else
-                {
-                    throw new NotImplementedException($"This Type-GUID case is not handled yet ({type}).");
-                }
-            }
-
-            MethodToType = methodToType;
-            TypeToGuid = typeToGuid;
-            GuidToType = guidToType;
-
-            void RegisterMapping(Type type, string guid)
-            {
-                typeToGuid.Add(type, guid);
-                guidToType.Add(guid, type);
-            }
+            GuidToType = TypeToGuid.ToDictionary(i => i.Value, i => i.Key);
         }
     }
 }

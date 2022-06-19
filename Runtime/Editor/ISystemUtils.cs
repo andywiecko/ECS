@@ -31,32 +31,12 @@ namespace andywiecko.ECS.Editor
                     .GetCustomAttribute<CategoryAttribute>() ?? new CategoryAttribute("Others")))
                 .ToDictionary(i => i.type, i => i.category);
 
-            var typeToGuid = new Dictionary<Type, string>();
-            var guidToType = new Dictionary<string, Type>();
+            TypeToGuid = Types
+                .Select(i => (type: i, guid: GuidUtils.TypeToGuid.TryGetValue(i, out var g) ? g : default))
+                .Where(i => i.guid != null) // TODO: add warning here when guid is not found?
+                .ToDictionary(i => i.type, i => i.guid);
 
-            foreach (var type in Types)
-            {
-                var guid = AssetDatabaseUtils.TryGetTypeGUID(type);
-
-                if (guid is string)
-                {
-                    RegisterMapping(type, guid);
-                }
-                else
-                {
-                    UnityEngine.Debug.LogError($"This Type-GUID case is not handled yet ({type}).");
-                    continue;
-                }
-            }
-
-            TypeToGuid = typeToGuid;
-            GuidToType = guidToType;
-
-            void RegisterMapping(Type type, string guid)
-            {
-                typeToGuid.Add(type, guid);
-                guidToType.Add(guid, type);
-            }
+            GuidToType = TypeToGuid.ToDictionary(i => i.Value, i => i.Key);
         }
     }
 }
