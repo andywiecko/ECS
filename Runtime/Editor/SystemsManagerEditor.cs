@@ -8,10 +8,10 @@ using UnityEngine.UIElements;
 
 namespace andywiecko.ECS.Editor
 {
-    [CustomEditor(typeof(SystemsManagerSolver))]
-    public class SystemsManagerSolverEditor : UnityEditor.Editor
+    [CustomEditor(typeof(SystemsManager))]
+    public class SystemsManagerEditor : UnityEditor.Editor
     {
-        public SystemsManagerSolver Target => target as SystemsManagerSolver;
+        public SystemsManager Target => target as SystemsManager;
 
         public override VisualElement CreateInspectorGUI()
         {

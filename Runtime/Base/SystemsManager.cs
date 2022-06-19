@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace andywiecko.ECS
 {
-    public class SystemsManagerSolver : MonoBehaviour
+    public class SystemsManager : MonoBehaviour
     {
         [Serializable]
         public class SerializedTypeBoolTuple
