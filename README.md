@@ -2,6 +2,12 @@
 
 Custom Entity Component System architecture designed to work with "large" entities.
 
+> **Warning**
+>
+> Package is in PREVIEW.
+> The API may change without advance notice.
+> Production usage is not recommended.
+
 **Package summary:**
 
 - Skeleton of the ECS architecture model designed especially for large entities (e.g. entities which contain thousand of triangles etc). 
@@ -255,6 +261,7 @@ Currently, the package supports only two argument tuples.
 ### v2.0.0
 
 - [ ] Scheduling jobs from job.
+- [ ] Jobs caching mechanism.
 
 ## Dependencies
 
