@@ -20,9 +20,6 @@ namespace andywiecko.ECS
             Guid = guid;
         }
 
-        public void Validate(Type t)
-        {
-            AssemblyQualifiedName = t.AssemblyQualifiedName;
-        }
+        public void Validate(Type t) => AssemblyQualifiedName = t.AssemblyQualifiedName;
     }
 }

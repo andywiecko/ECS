@@ -87,6 +87,13 @@ namespace andywiecko.ECS
                     SerializedTypeBoolTuple tuple = new() { type = new(t, ISystemUtils.TypeToGuid[t]) };
                     Systems.Add(tuple);
                 }
+
+                foreach (var t in Systems)
+                {
+                    var type = t.type;
+                    var guid = type.Guid;
+                    type.Validate(ISystemUtils.GuidToType[guid]);
+                }
             }
         }
     }
