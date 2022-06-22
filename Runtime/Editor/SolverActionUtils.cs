@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
 
 namespace andywiecko.ECS.Editor
 {
@@ -15,19 +16,15 @@ namespace andywiecko.ECS.Editor
 
         static SolverActionUtils()
         {
-            AssemblyToMethods = AppDomain.CurrentDomain.GetAssemblies()
-                .Select(i => (assembly: i, methods: i
-                    .GetTypes()
-                    .SelectMany(t => t.GetMethods())
-                    .Where(m => m.GetCustomAttributes<SolverActionAttribute>().Count() > 0)
-                    .ToArray() as IReadOnlyList<MethodInfo>)
-                ).ToDictionary(i => i.assembly, i => i.methods);
-
-            Methods = AssemblyToMethods.Values
-                .SelectMany(i => i)
+            Methods = TypeCache
+                .GetMethodsWithAttribute<SolverActionAttribute>()
                 .ToArray();
 
             MethodToType = Methods.ToDictionary(i => i, i => i.ReflectedType);
+
+            AssemblyToMethods = Methods
+                .GroupBy(i => i.ReflectedType.Assembly)
+                .ToDictionary(i => i.Key, i => i.ToArray() as IReadOnlyList<MethodInfo>);
 
             TypeToGuid = MethodToType.Values
                 .Distinct()

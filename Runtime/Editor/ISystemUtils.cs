@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
 
 namespace andywiecko.ECS.Editor
 {
@@ -15,16 +16,14 @@ namespace andywiecko.ECS.Editor
 
         static ISystemUtils()
         {
-            AssemblyToTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .Select(i => (assembly: i, types: i.GetTypes()
-                    .Where(i => !i.IsAbstract)
-                    .Where(i => typeof(ISystem).IsAssignableFrom(i))
-                    .ToArray() as IReadOnlyList<Type>))
-                .ToDictionary(i => i.assembly, i => i.types);
-
-            Types = AssemblyToTypes
-                .SelectMany(i => i.Value)
+            Types = TypeCache
+                .GetTypesDerivedFrom<ISystem>()
+                .Where(i => !i.IsAbstract)
                 .ToArray();
+
+            AssemblyToTypes = Types
+                .GroupBy(i => i.Assembly)
+                .ToDictionary(i => i.Key, i => i.ToArray() as IReadOnlyList<Type>);
 
             TypeToCategory = Types
                 .Select(i => (type: i, category: i
