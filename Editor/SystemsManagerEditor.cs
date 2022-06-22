@@ -67,7 +67,7 @@ namespace andywiecko.ECS.Editor
 
                 var assemblyQualifiedName = typeProperty.FindPropertyRelative("<AssemblyQualifiedName>k__BackingField").stringValue;
                 var type = Type.GetType(assemblyQualifiedName);
-                var categoryName = ISystemUtils.TypeToCategory[type].Name;
+                var categoryName = TypeCacheUtils.Systems.TypeToCategory[type].Name;
 
                 valueField.RegisterCallback<ChangeEvent<bool>>(evt =>
                 {

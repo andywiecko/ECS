@@ -78,13 +78,13 @@ namespace andywiecko.ECS
                     return;
                 }
 
-                var types = World.TargetAssemblies.SelectMany(i => ISystemUtils.AssemblyToTypes[Assembly.Load(i)]);
+                var types = World.TargetAssemblies.SelectMany(i => TypeCacheUtils.Systems.AssemblyToTypes[Assembly.Load(i)]);
                 Systems.RemoveAll(i => !types.Contains(i.type.Type));
                 var serializedSystems = Systems.Select(i => i.type.Type);
 
                 foreach (var t in types.Except(serializedSystems))
                 {
-                    SerializedTypeBoolTuple tuple = new() { type = new(t, ISystemUtils.TypeToGuid[t]) };
+                    SerializedTypeBoolTuple tuple = new() { type = new(t, TypeCacheUtils.Systems.TypeToGuid[t]) };
                     Systems.Add(tuple);
                 }
 
@@ -92,7 +92,7 @@ namespace andywiecko.ECS
                 {
                     var type = t.type;
                     var guid = type.Guid;
-                    type.Validate(ISystemUtils.GuidToType[guid]);
+                    type.Validate(TypeCacheUtils.Systems.GuidToType[guid]);
                 }
             }
         }

@@ -105,7 +105,7 @@ namespace andywiecko.ECS.Editor
                 var toggle = CreateToggleButtonForType(c);
                 line.Add(toggle);
 
-                var guid = GuidUtils.TypeToGuid[c];
+                var guid = TypeCacheUtils.Guid.TypeToGuid[c];
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var scriptField = new ObjectField()
                 {

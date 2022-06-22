@@ -20,7 +20,7 @@ namespace andywiecko.ECS
         [field: HideInInspector, SerializeField]
         public string Name { get; private set; } = "";
 
-        [field: HideInInspector, SerializeField]
+        [field: SerializeField]
         public SerializedType SerializedType { get; private set; } = default;
 
 #if UNITY_EDITOR
@@ -28,7 +28,7 @@ namespace andywiecko.ECS
         private MonoScript script = default;
 #endif
 
-        public (MethodInfo MethodInfo, Type Type) Value => (SolverActionUtils.GuidToType[SerializedType.Guid].GetMethod(Name), SolverActionUtils.GuidToType[SerializedType.Guid]);
+        public (MethodInfo MethodInfo, Type Type) Value => (TypeCacheUtils.SolverActions.GuidToType[SerializedType.Guid].GetMethod(Name), TypeCacheUtils.SolverActions.GuidToType[SerializedType.Guid]);
 
         public void Deconstruct(out MethodInfo m, out Type t) => (m, t) = Value;
 
@@ -151,7 +151,7 @@ namespace andywiecko.ECS
             // HACK:
             //   For unknown reason static dicts don't survive when saving asset,
             //   but OnValidate is called during save.
-            if (SolverActionUtils.GuidToType.Count == 0)
+            if (TypeCacheUtils.SolverActions.GuidToType.Count == 0)
             {
                 return;
             }
@@ -169,7 +169,7 @@ namespace andywiecko.ECS
                     .Where(i => i is not null)
                     .ToList();
 
-                list.RemoveAll(i => !SolverActionUtils.GuidToType.ContainsKey(i.SerializedType.Guid));
+                list.RemoveAll(i => !TypeCacheUtils.SolverActions.GuidToType.ContainsKey(i.SerializedType.Guid));
 
                 SetListAtAction(action, list);
             }
@@ -179,14 +179,14 @@ namespace andywiecko.ECS
 
             var methodsToTypes = TargetAssemblies
                 .Select(i => Assembly.Load(i))
-                .SelectMany(i => SolverActionUtils.AssemblyToMethods[i])
-                .Select(i => (methodInfo: i, type: SolverActionUtils.MethodToType[i]));
+                .SelectMany(i => TypeCacheUtils.SolverActions.AssemblyToMethods[i])
+                .Select(i => (methodInfo: i, type: TypeCacheUtils.SolverActions.MethodToType[i]));
 
             foreach (var (m, t) in methodsToTypes)
             {
                 if (!serializedMethods.Contains((m, t)))
                 {
-                    undefinedMethods.Add(new(m, t, SolverActionUtils.TypeToGuid[t]));
+                    undefinedMethods.Add(new(m, t, TypeCacheUtils.SolverActions.TypeToGuid[t]));
                 }
             }
 
