@@ -3,11 +3,72 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace andywiecko.ECS.Editor
 {
     public static class TypeCacheUtils
     {
+        #region Categories
+        public static class Categories
+        {
+            public static readonly IReadOnlyDictionary<Type, CategoryAttribute> TypeToCategory;
+
+            static Categories()
+            {
+                TypeToCategory = TypeCache
+                    .GetTypesWithAttribute<CategoryAttribute>()
+                    .ToDictionary(i => i, i => i.GetCustomAttribute<CategoryAttribute>());
+            }
+        }
+        #endregion
+
+        #region Components
+        public static class Components
+        {
+            public static readonly IReadOnlyList<Type> Types;
+            public static readonly IReadOnlyDictionary<Type, Type> ComponentToEntity;
+
+            static Components()
+            {
+                Types = TypeCache
+                    .GetTypesDerivedFrom<BaseComponent>()
+                    .ToArray();
+
+                ComponentToEntity = TypeCache
+                    .GetTypesWithAttribute<RequireComponent>()
+                    .Where(i => i.IsSubclassOf(typeof(BaseComponent)))
+                    .Select(i => (component: i, entity: i
+                        .GetCustomAttributes<RequireComponent>()
+                        .SelectMany(i => new[] { i.m_Type0, i.m_Type1, i.m_Type2 }) // TODO warning if multiple entities
+                        .Where(i => i != null)
+                        .Where(i => i.IsSubclassOf(typeof(Entity)))
+                        .FirstOrDefault()))
+                    .Where(i => i.entity != null)
+                    .ToDictionary(i => i.component, i => i.entity);
+            }
+        }
+        #endregion
+
+        #region Entities
+        public static class Entities
+        {
+            public static readonly IReadOnlyList<Type> Types;
+            public static readonly IReadOnlyDictionary<Type, IReadOnlyList<Type>> EntityToComponents;
+
+            static Entities()
+            {
+                Types = TypeCache.GetTypesDerivedFrom<Entity>().ToArray();
+
+                EntityToComponents = Components.ComponentToEntity
+                    .Select(i => (entity: i.Value, component: i.Key))
+                    .GroupBy(i => i.entity)
+                    .ToDictionary(i => i.Key, i => i
+                        .Select(j => j.component).ToList() as IReadOnlyList<Type>);
+            }
+        }
+        #endregion
+
         #region Guid
         public static class Guid
         {
@@ -95,6 +156,20 @@ namespace andywiecko.ECS.Editor
                     .ToDictionary(i => i.type, i => i.guid);
 
                 GuidToType = TypeToGuid.ToDictionary(i => i.Value, i => i.Key);
+            }
+        }
+        #endregion
+
+        #region Tooltips
+        public static class Tooltips
+        {
+            public static readonly IReadOnlyDictionary<Type, TooltipAttribute> TypeToTooltip;
+
+            static Tooltips()
+            {
+                TypeToTooltip = TypeCache
+                    .GetTypesWithAttribute<TooltipAttribute>()
+                    .ToDictionary(i => i, i => i.GetCustomAttribute<TooltipAttribute>());
             }
         }
         #endregion
