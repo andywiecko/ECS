@@ -13,53 +13,6 @@ namespace andywiecko.ECS.Editor
     [CustomEditor(typeof(Entity), editorForChildClasses: true)]
     public class EntityEditor : UnityEditor.Editor
     {
-        public static readonly IReadOnlyList<Type> EntityTypes;
-        public static readonly IReadOnlyDictionary<Type, IReadOnlyList<Type>> EntityTypeToComponentType;
-        public static readonly IReadOnlyDictionary<Type, CategoryAttribute> ComponentTypeToCategory;
-        public static readonly IReadOnlyDictionary<Type, TooltipAttribute> ComponentTypeToTooltip;
-
-        static EntityEditor()
-        {
-            EntityTypes = TypeCache.GetTypesDerivedFrom<Entity>().ToArray();
-
-            var dict = new Dictionary<Type, List<Type>>();
-            var pairs = TypeCache
-                .GetTypesWithAttribute<RequireComponent>()
-                .Select(i => (component: i, entity: i
-                    .GetCustomAttributes<RequireComponent>()
-                    .SelectMany(i => new[] { i.m_Type0, i.m_Type1, i.m_Type2 })
-                    .Where(i => i != null)
-                    .Where(i => i.IsSubclassOf(typeof(Entity)))
-                    .FirstOrDefault()))
-                .Where(i => i.entity != null)
-                .Distinct()
-            ;
-
-            foreach (var p in pairs)
-            {
-                if (!dict.TryGetValue(p.entity, out var list))
-                {
-                    dict[p.entity] = list = new();
-                }
-
-                list.Add(p.component);
-            }
-
-            EntityTypeToComponentType = dict.ToDictionary(i => i.Key, i => i.Value as IReadOnlyList<Type>);
-
-            ComponentTypeToCategory = EntityTypeToComponentType
-                .SelectMany(i => i.Value)
-                .Select(i => (type: i, category: i
-                    .GetCustomAttribute<CategoryAttribute>() ?? new CategoryAttribute("Others")))
-                .ToDictionary(i => i.type, i => i.category);
-
-            ComponentTypeToTooltip = EntityTypeToComponentType
-                .SelectMany(i => i.Value)
-                .Select(i => (type: i, category: i
-                    .GetCustomAttribute<TooltipAttribute>()))
-                .ToDictionary(i => i.type, i => i.category);
-        }
-
         private MonoBehaviour Target => target as MonoBehaviour;
         private PrefabStage prefabStage;
         private (bool isPrefabInstance, bool isPrefabAsset, bool isStage) targetStatus;
@@ -86,7 +39,7 @@ namespace andywiecko.ECS.Editor
             var components = new VisualElement() { name = "components" };
 
             var type = target.GetType();
-            var componentTypes = EntityTypeToComponentType[type];
+            var componentTypes = TypeCacheUtils.Entities.EntityToComponents[type];
 
             foreach (var c in componentTypes)
             {
@@ -100,7 +53,7 @@ namespace andywiecko.ECS.Editor
                     }
                 };
 
-                var categoryName = ComponentTypeToCategory[c].Name;
+                var categoryName = TypeCacheUtils.Categories.TypeToCategory.TryGetValue(c, out var attribute) ? attribute.Name : "Others";
 
                 var toggle = CreateToggleButtonForType(c);
                 line.Add(toggle);
@@ -114,7 +67,7 @@ namespace andywiecko.ECS.Editor
                 };
                 scriptField.Q(className: ObjectField.selectorUssClassName).SetEnabled(false);
                 scriptField.Q<Label>().text = scriptField.Q<Label>().text.ToNonPascal();
-                scriptField.tooltip = ComponentTypeToTooltip[c]?.tooltip;
+                scriptField.tooltip = TypeCacheUtils.Tooltips.TypeToTooltip.TryGetValue(c, out var tooltip) ? tooltip.tooltip : default;
                 line.Add(scriptField);
 
                 if (!categories.TryGetValue(categoryName, out var category))
