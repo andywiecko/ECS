@@ -35,17 +35,24 @@ namespace andywiecko.ECS.Editor
                     .GetTypesDerivedFrom<BaseComponent>()
                     .ToArray();
 
-                ComponentToEntity = TypeCache
+                var componentToEntities = TypeCache
                     .GetTypesWithAttribute<RequireComponent>()
                     .Where(i => i.IsSubclassOf(typeof(BaseComponent)))
                     .Select(i => (component: i, entity: i
                         .GetCustomAttributes<RequireComponent>()
                         .SelectMany(i => new[] { i.m_Type0, i.m_Type1, i.m_Type2 }) // TODO warning if multiple entities
                         .Where(i => i != null)
-                        .Where(i => i.IsSubclassOf(typeof(Entity)))
-                        .FirstOrDefault()))
-                    .Where(i => i.entity != null)
-                    .ToDictionary(i => i.component, i => i.entity);
+                        .Where(i => i.IsSubclassOf(typeof(Entity))))
+                    ).Where(i => i.entity.Any());
+
+                foreach (var (c, e) in componentToEntities.Where(i => i.entity.Count() > 1))
+                {
+                    Debug.LogError(
+                        $"{c}: {nameof(BaseComponent)} cannot require more than one entity type!" +
+                        $"Please remove one of the {typeof(RequireComponent)} attribute.");
+                }
+
+                ComponentToEntity = componentToEntities.ToDictionary(i => i.component, i => i.entity.First());
             }
         }
         #endregion

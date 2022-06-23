@@ -39,7 +39,10 @@ namespace andywiecko.ECS.Editor
             var components = new VisualElement() { name = "components" };
 
             var type = target.GetType();
-            var componentTypes = TypeCacheUtils.Entities.EntityToComponents[type];
+            if (!TypeCacheUtils.Entities.EntityToComponents.TryGetValue(type, out var componentTypes))
+            {
+                return components;
+            }
 
             foreach (var c in componentTypes)
             {
