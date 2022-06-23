@@ -8,6 +8,25 @@ namespace andywiecko.ECS.Editor
     [CustomPropertyDrawer(typeof(SerializedType))]
     public class SerializedTypeDrawer : PropertyDrawer
     {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            var guid = property.FindPropertyRelative("<Guid>k__BackingField");
+            var assemblyQualifiedName = property.FindPropertyRelative("<AssemblyQualifiedName>k__BackingField");
+            var path = AssetDatabase.GUIDToAssetPath(guid.stringValue);
+            var monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+
+            var obj = EditorGUI.ObjectField(position, monoScript, typeof(MonoScript), allowSceneObjects: false);
+            if (obj != null)
+            {
+                var script = obj as MonoScript;
+                var type = script.GetClass();
+                guid.stringValue = TypeCacheUtils.Guid.TypeToGuid[type];
+                assemblyQualifiedName.stringValue = type.AssemblyQualifiedName;
+            }
+
+            property.serializedObject.ApplyModifiedProperties();
+        }
+
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var root = new VisualElement();

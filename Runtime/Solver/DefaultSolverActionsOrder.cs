@@ -12,64 +12,15 @@ using UnityEngine;
 namespace andywiecko.ECS
 {
     [Serializable]
-    public class SerializedMethod
-    {
-        [HideInInspector, SerializeField]
-        private string tag = "";
-
-        [field: HideInInspector, SerializeField]
-        public string Name { get; private set; } = "";
-
-        [field: SerializeField]
-        public SerializedType SerializedType { get; private set; } = default;
-
-#if UNITY_EDITOR
-        [SerializeField]
-        private MonoScript script = default;
-#endif
-
-        public (MethodInfo MethodInfo, Type Type) Value => (TypeCacheUtils.SolverActions.GuidToType[SerializedType.Guid].GetMethod(Name), TypeCacheUtils.SolverActions.GuidToType[SerializedType.Guid]);
-
-        public void Deconstruct(out MethodInfo m, out Type t) => (m, t) = Value;
-
-        public SerializedMethod(MethodInfo methodInfo, Type type, string guid)
-        {
-            Name = methodInfo.Name;
-            tag = Name.ToNonPascal() + $" ({type.Name.ToNonPascal()})";
-            this.SerializedType = new(type, guid);
-            Validate(type);
-        }
-
-        public void Validate(Type type)
-        {
-            //this.SerializedType.Validate(type);
-#if UNITY_EDITOR
-            var path = AssetDatabase.GUIDToAssetPath(SerializedType.Guid);
-            script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
-#endif 
-        }
-    }
-
-    [Serializable]
     public class UnconfiguredMethod
     {
-        [HideInInspector, SerializeField]
-        private string tag = "";
-
-        [field: HideInInspector, SerializeField]
+        [field: SerializeField]
         public SerializedMethod Method { get; private set; }
 
         [field: SerializeField]
         public SolverAction Action { get; private set; } = SolverAction.Undefined;
 
-        public UnconfiguredMethod(SerializedMethod method)
-        {
-            var (m, t) = method.Value;
-            tag = m.Name.ToNonPascal() + $" ({t.Name.ToNonPascal()})";
-            Method = method;
-        }
-
-        public UnconfiguredMethod(MethodInfo method, Type type, string guid) : this(new(method, type, guid)) { }
+        public UnconfiguredMethod(MethodInfo method, string guid) => Method = new(method, guid);
     }
 
     [CreateAssetMenu(fileName = "DefaultSolverActionsOrder", menuName = "ECS/Solver/Default Solver Actions Order")]
@@ -165,7 +116,7 @@ namespace andywiecko.ECS
             foreach (var action in SystemExtensions.GetValues<SolverAction>().Except(new[] { SolverAction.Undefined }))
             {
                 var list = GetListAtAction(action)
-                    .DistinctBy(i => (i.Name, i.SerializedType.Guid))
+                    .DistinctBy(i => (i.MethodName, i.SerializedType.Guid))
                     .Where(i => i is not null)
                     .ToList();
 
@@ -186,7 +137,7 @@ namespace andywiecko.ECS
             {
                 if (!serializedMethods.Contains((m, t)))
                 {
-                    undefinedMethods.Add(new(m, t, TypeCacheUtils.SolverActions.TypeToGuid[t]));
+                    undefinedMethods.Add(new(m, TypeCacheUtils.SolverActions.TypeToGuid[t]));
                 }
             }
 
@@ -197,7 +148,7 @@ namespace andywiecko.ECS
                 {
                     foreach (var l in list)
                     {
-                        l.Validate(l.Value.Type);
+                        l.Validate(l.Type);
                     }
                 }
             }
