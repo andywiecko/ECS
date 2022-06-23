@@ -78,7 +78,10 @@ namespace andywiecko.ECS
                     return;
                 }
 
-                var types = World.TargetAssemblies.SelectMany(i => TypeCacheUtils.Systems.AssemblyToTypes[Assembly.Load(i)]);
+                var worldAssemblies = World.TargetAssemblies.Select(i => Assembly.Load(i));
+                var types = TypeCacheUtils.Systems.AssemblyToTypes
+                    .Where(i => worldAssemblies.Contains(i.Key))
+                    .SelectMany(i => i.Value);
                 Systems.RemoveAll(i => !types.Contains(i.type.Type));
                 var serializedSystems = Systems.Select(i => i.type.Type);
 
