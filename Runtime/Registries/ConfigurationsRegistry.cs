@@ -1,9 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-
 namespace andywiecko.ECS
 {
-    public class ConfigurationsRegistry
+    public class ConfigurationsRegistry : IEnumerable<KeyValuePair<Type, IConfiguration>>
     {
         public event Action OnRegistryChange;
         private readonly Dictionary<Type, IConfiguration> configs = new();
@@ -24,5 +24,8 @@ namespace andywiecko.ECS
                 OnRegistryChange?.Invoke();
             }
         }
+
+        public IEnumerator<KeyValuePair<Type, IConfiguration>> GetEnumerator() => configs.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (this as IEnumerable<KeyValuePair<Type, IConfiguration>>).GetEnumerator();
     }
 }
