@@ -57,8 +57,7 @@ namespace andywiecko.ECS.Editor
                 };
 
                 var valueProperty = i.FindPropertyRelative("value");
-                var valueField = new PropertyField(valueProperty);
-                valueField.label = "";
+                var valueField = new PropertyField(valueProperty) { label = "" };
                 valueField.Bind(valueProperty.serializedObject);
 
                 var typeProperty = i.FindPropertyRelative("type");
@@ -67,7 +66,7 @@ namespace andywiecko.ECS.Editor
 
                 var assemblyQualifiedName = typeProperty.FindPropertyRelative("<AssemblyQualifiedName>k__BackingField").stringValue;
                 var type = Type.GetType(assemblyQualifiedName);
-                var categoryName = TypeCacheUtils.Systems.TypeToCategory[type].Name;
+                var categoryName = TypeCacheUtils.Categories.TypeToCategory.TryGetValue(type, out var attribute) ? attribute.Name : "Others";
 
                 valueField.RegisterCallback<ChangeEvent<bool>>(evt =>
                 {

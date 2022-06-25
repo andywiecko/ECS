@@ -40,7 +40,7 @@ namespace andywiecko.ECS.Editor
                     .Where(i => i.IsSubclassOf(typeof(BaseComponent)))
                     .Select(i => (component: i, entity: i
                         .GetCustomAttributes<RequireComponent>()
-                        .SelectMany(i => new[] { i.m_Type0, i.m_Type1, i.m_Type2 }) // TODO warning if multiple entities
+                        .SelectMany(i => new[] { i.m_Type0, i.m_Type1, i.m_Type2 })
                         .Where(i => i != null)
                         .Where(i => i.IsSubclassOf(typeof(Entity))))
                     ).Where(i => i.entity.Any());
@@ -123,7 +123,7 @@ namespace andywiecko.ECS.Editor
 
                 TypeToGuid = MethodToType.Values
                     .Distinct()
-                    .Select(i => (type: i, guid: TypeCacheUtils.Guid.TypeToGuid.TryGetValue(i, out var g) ? g : default))
+                    .Select(i => (type: i, guid: Guid.TypeToGuid.TryGetValue(i, out var g) ? g : default))
                     .Where(i => i.guid != null) // TODO: add warning here when guid is not found?
                     .ToDictionary(i => i.type, i => i.guid);
 
@@ -139,7 +139,6 @@ namespace andywiecko.ECS.Editor
             public static readonly IReadOnlyDictionary<Type, string> TypeToGuid;
             public static readonly IReadOnlyDictionary<string, Type> GuidToType;
             public static readonly IReadOnlyDictionary<Assembly, IReadOnlyList<Type>> AssemblyToTypes;
-            public static readonly IReadOnlyDictionary<Type, CategoryAttribute> TypeToCategory;
 
             static Systems()
             {
@@ -151,11 +150,6 @@ namespace andywiecko.ECS.Editor
                 AssemblyToTypes = Types
                     .GroupBy(i => i.Assembly)
                     .ToDictionary(i => i.Key, i => i.ToArray() as IReadOnlyList<Type>);
-
-                TypeToCategory = Types
-                    .Select(i => (type: i, category: i
-                        .GetCustomAttribute<CategoryAttribute>() ?? new CategoryAttribute("Others")))
-                    .ToDictionary(i => i.type, i => i.category);
 
                 TypeToGuid = Types
                     .Select(i => (type: i, guid: Guid.TypeToGuid.TryGetValue(i, out var g) ? g : default))
