@@ -28,6 +28,18 @@ namespace andywiecko.ECS.Editor.Tests
         }
 
         [Test]
+        public void RemoveSystemTest()
+        {
+            registry = new();
+            var s = new FakeSystem1();
+
+            registry.Add(s);
+            registry.Remove(s);
+
+            Assert.That(registry, Is.Empty);
+        }
+
+        [Test]
         public void ThrowOnMultipleAddSystemOfGivenTypeTest()
         {
             registry = new();

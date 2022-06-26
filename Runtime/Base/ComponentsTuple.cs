@@ -8,19 +8,20 @@ namespace andywiecko.ECS
     {
         private readonly List<IDisposable> refsToDisposeOnDestroy = new();
 
+        public void Destroy()
+        {
+            foreach (var reference in refsToDisposeOnDestroy)
+            {
+                reference.Dispose();
+            }
+            refsToDisposeOnDestroy.Clear();
+        }
+
         protected void DisposeOnDestroy(params IDisposable[] references)
         {
             foreach (var reference in references)
             {
                 refsToDisposeOnDestroy.Add(reference);
-            }
-        }
-
-        protected void Destroy()
-        {
-            foreach (var reference in refsToDisposeOnDestroy)
-            {
-                reference.Dispose();
             }
         }
     }
