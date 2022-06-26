@@ -31,9 +31,8 @@ namespace andywiecko.ECS.Editor.Tests
             var registryChanged = false;
             registry = new();
             registry.OnRegistryChange += () => registryChanged = true;
-            var config = new FakeConfig1();
 
-            registry.Set(config);
+            registry.Set<FakeConfig1>(new());
 
             Assert.That(registryChanged, Is.True);
         }
@@ -80,18 +79,6 @@ namespace andywiecko.ECS.Editor.Tests
             registry.Clear();
 
             Assert.Throws<KeyNotFoundException>(() => registry.Get<FakeConfig1>());
-        }
-
-        [Test]
-        public void OnRegistryChangedTest()
-        {
-            var changed = false;
-            registry = new();
-            registry.OnRegistryChange += () => changed = true;
-
-            registry.Set<FakeConfig1>(new());
-
-            Assert.That(changed, Is.True);
         }
     }
 }

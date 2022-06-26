@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace andywiecko.ECS
 {
-    public class SystemsRegistry
+    public class SystemsRegistry : IEnumerable<KeyValuePair<Type, ISystem>>
     {
         public event Action OnRegistryChange;
         private readonly Dictionary<Type, ISystem> systems = new();
@@ -15,8 +16,9 @@ namespace andywiecko.ECS
         }
 
         public bool TryGetSystem(Type type, out ISystem system) => systems.TryGetValue(type, out system);
+        public T Get<T>() where T : class, ISystem => systems[typeof(T)] as T;
 
-        public void Add<T>(T system) where T : ISystem
+        public void Add<T>(T system) where T : class, ISystem
         {
             var type = system.GetType();
 
@@ -31,7 +33,7 @@ namespace andywiecko.ECS
             }
         }
 
-        public void Remove<T>(T system) where T : ISystem
+        public void Remove<T>(T system) where T : class, ISystem
         {
             var type = system.GetType();
             if (systems.ContainsKey(type))
@@ -40,5 +42,8 @@ namespace andywiecko.ECS
                 OnRegistryChange?.Invoke();
             }
         }
+
+        public IEnumerator<KeyValuePair<Type, ISystem>> GetEnumerator() => systems.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (systems as IEnumerable<KeyValuePair<Type, ISystem>>).GetEnumerator();
     }
 }
