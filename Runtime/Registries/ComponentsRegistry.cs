@@ -8,7 +8,8 @@ namespace andywiecko.ECS
 {
     public class ComponentsRegistry : IEnumerable<KeyValuePair<Type, IList>>
     {
-        public IdCounter<IComponent> Counter { get; } = new();
+        public event Action OnRegistryChange;
+        public IdCounter<IComponent> Counter { get; } = new(); // TODO: remove counter from registry?
 
         private readonly Dictionary<Type, IList> components = new();
         private readonly Dictionary<Type, Action<object>> onAddActions = new();
@@ -74,6 +75,7 @@ namespace andywiecko.ECS
                 components[@interface].Add(instance);
                 onAddActions[@interface]?.Invoke(instance);
             }
+            OnRegistryChange?.Invoke();
         }
 
         public void Remove<T>(T instance) where T : IComponent
@@ -84,6 +86,7 @@ namespace andywiecko.ECS
                 components[@interface].Remove(instance);
                 onRemoveActions[@interface]?.Invoke(instance);
             }
+            OnRegistryChange?.Invoke();
         }
 
         public void SubscribeOnAdd<T>(Action<object> fun) where T : IComponent => SubscribeOnAdd(typeof(T), fun);
