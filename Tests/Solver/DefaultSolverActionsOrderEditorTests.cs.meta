@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 1a74e62e1b9f25443ac2fdbaee1e1a5b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - solverActionsOrder: {fileID: 11400000, guid: 9508a672709bdbc4f9fac5248f69dda2, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
