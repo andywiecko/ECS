@@ -70,5 +70,28 @@ namespace andywiecko.ECS.Editor.Tests
             };
             Assert.That(registry, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void ClearTest()
+        {
+            registry = new();
+
+            registry.Set<FakeConfig1>(new());
+            registry.Clear();
+
+            Assert.Throws<KeyNotFoundException>(() => registry.Get<FakeConfig1>());
+        }
+
+        [Test]
+        public void OnRegistryChangedTest()
+        {
+            var changed = false;
+            registry = new();
+            registry.OnRegistryChange += () => changed = true;
+
+            registry.Set<FakeConfig1>(new());
+
+            Assert.That(changed, Is.True);
+        }
     }
 }
