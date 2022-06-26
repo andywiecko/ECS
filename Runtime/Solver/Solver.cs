@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace andywiecko.ECS
 {
-    public class Solver : MonoBehaviour
+    public class Solver : MonoBehaviour, ISolver
     {
         [field: SerializeField]
         public World World { get; private set; } = default;
@@ -16,29 +16,23 @@ namespace andywiecko.ECS
         [field: SerializeField]
         public SolverActionsOrder ActionsOrder { get; private set; } = default;
 
+        public List<Func<JobHandle, JobHandle>> Jobs { get; } = new();
         public event Action OnScheduling;
         public event Action OnJobsComplete;
 
-        private List<Func<JobHandle, JobHandle>> jobs = new();
         private JobHandle dependencies = new();
-
-        public void ResetActions()
-        {
-            OnScheduling = null;
-            OnJobsComplete = null;
-        }
 
         private void Awake()
         {
             World.SystemsRegistry.OnRegistryChange += RegenerateSolverTasks;
         }
 
-        public void Start()
+        private void Start()
         {
             RegenerateSolverTasks();
         }
 
-        public void Update()
+        private void Update()
         {
             OnScheduling?.Invoke();
             ScheduleJobs().Complete();
@@ -47,21 +41,25 @@ namespace andywiecko.ECS
 
         private JobHandle ScheduleJobs()
         {
-            foreach (var job in jobs)
+            foreach (var job in Jobs)
             {
                 dependencies = job(dependencies);
             }
             return dependencies;
         }
 
-        public void OnDestroy()
+        private void OnDestroy()
         {
             World.SystemsRegistry.OnRegistryChange -= RegenerateSolverTasks;
         }
 
         private void RegenerateSolverTasks()
         {
-            jobs = JobsOrder.GenerateJobs(World);
+            Jobs.Clear();
+            OnScheduling = null;
+            OnJobsComplete = null;
+
+            JobsOrder.GenerateJobs(this, World);
             ActionsOrder.GenerateActions(this, World);
         }
     }

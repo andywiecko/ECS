@@ -1,6 +1,7 @@
 using andywiecko.ECS.Editor;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +25,7 @@ namespace andywiecko.ECS
     }
 
     [CreateAssetMenu(fileName = "DefaultSolverActionsOrder", menuName = "ECS/Solver/Default Solver Actions Order")]
-    public class DefaultSolverActionsOrder : SolverActionsOrder
+    public class DefaultSolverActionsOrder : SolverActionsOrder, IEnumerable<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>>
     {
         private List<SerializedMethod> GetListAtAction(SolverAction action) => action switch
         {
@@ -47,9 +48,9 @@ namespace andywiecko.ECS
             }
         }
 
-        private readonly Dictionary<SolverAction, List<(MethodInfo, Type)>> actionOrder = new();
+        private readonly Dictionary<SolverAction, IReadOnlyList<(MethodInfo, Type)>> actionOrder = new();
 
-        public void RegenerateActionOrder()
+        private void RegenerateActionsOrder()
         {
             actionOrder.Clear();
             foreach (var a in SystemExtensions.GetValues<SolverAction>())
@@ -154,10 +155,9 @@ namespace andywiecko.ECS
             }
         }
 
-        public override void GenerateActions(Solver solver, World world)
+        public override void GenerateActions(ISolver solver, IWorld world)
         {
-            solver.ResetActions();
-            RegenerateActionOrder();
+            RegenerateActionsOrder();
 
             foreach (var (method, type) in actionOrder[SolverAction.OnScheduling])
             {
@@ -175,5 +175,8 @@ namespace andywiecko.ECS
                 }
             }
         }
+
+        public IEnumerator<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>> GetEnumerator() => actionOrder.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (this as IEnumerable<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>>).GetEnumerator();
     }
 }
