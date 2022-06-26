@@ -68,7 +68,7 @@ namespace andywiecko.ECS.Editor.Tests
                 [typeof(FakeConfig2)] = c2,
                 [typeof(FakeConfig3)] = c3,
             };
-            Assert.That(registry, Is.EqualTo(expected));
+            Assert.That(registry, Is.EquivalentTo(expected));
         }
 
         [Test]

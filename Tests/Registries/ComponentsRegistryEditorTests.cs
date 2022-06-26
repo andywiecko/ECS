@@ -127,7 +127,7 @@ namespace andywiecko.ECS.Editor.Tests
                 [typeof(IFake1)] = new[] { f1, f2, f3 },
                 [typeof(IFake2)] = new[] { f3 },
             };
-            Assert.That(registry, Is.EqualTo(expected));
+            Assert.That(registry, Is.EquivalentTo(expected));
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace andywiecko.ECS.Editor.Tests
                 [typeof(IComponent)] = new IComponent[] { },
                 [typeof(IFake1)] = new IComponent[] { },
             };
-            Assert.That(registry, Is.EqualTo(expected));
+            Assert.That(registry, Is.EquivalentTo(expected));
         }
 
         [Test]

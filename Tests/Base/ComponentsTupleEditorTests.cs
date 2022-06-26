@@ -64,7 +64,7 @@ namespace andywiecko.ECS.Editor.Tests
                 [typeof(IFake3)] = new IFake3[] { },
                 [typeof(IFake12)] = new[] { f12 }
             };
-            Assert.That(registry, Is.EqualTo(expected));
+            Assert.That(registry, Is.EquivalentTo(expected));
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace andywiecko.ECS.Editor.Tests
                 [typeof(IFake3)] = new IFake3[] { },
                 [typeof(IFake12)] = new IFake12[] { }
             };
-            Assert.That(registry, Is.EqualTo(expected));
+            Assert.That(registry, Is.EquivalentTo(expected));
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace andywiecko.ECS.Editor.Tests
                 [typeof(IFake3)] = new IFake3[] { },
                 [typeof(IFake12)] = new[] { f12 }
             };
-            Assert.That(registry, Is.EqualTo(expected));
+            Assert.That(registry, Is.EquivalentTo(expected));
         }
     }
 }

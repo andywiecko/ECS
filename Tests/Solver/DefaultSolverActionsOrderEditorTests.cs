@@ -45,7 +45,7 @@ namespace andywiecko.ECS.Editor.Tests
                 [SolverAction.OnScheduling] = new[] { action(typeof(FakeSystem1), "Method1"), action(typeof(FakeSystem1), "Method2") },
                 [SolverAction.OnJobsCompletion] = new[] { action(typeof(FakeSystem2), "Method1") }
             };
-            Assert.That(solverActionsOrder, Is.EqualTo(expected));
+            Assert.That(solverActionsOrder, Is.EquivalentTo(expected));
 
             static (MethodInfo, Type) action(Type t, string methodName)
             {
