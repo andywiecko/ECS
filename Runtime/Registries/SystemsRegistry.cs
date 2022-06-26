@@ -8,6 +8,12 @@ namespace andywiecko.ECS
         public event Action OnRegistryChange;
         private readonly Dictionary<Type, ISystem> systems = new();
 
+        public void Clear()
+        {
+            systems.Clear();
+            OnRegistryChange = default;
+        }
+
         public bool TryGetSystem(Type type, out ISystem system) => systems.TryGetValue(type, out system);
 
         public void Add<T>(T system) where T : ISystem

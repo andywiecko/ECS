@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace andywiecko.ECS
 {
-    public class ComponentsRegistry
+    public class ComponentsRegistry : IEnumerable<KeyValuePair<Type, IList>>
     {
         public IdCounter<IComponent> Counter { get; } = new();
 
@@ -56,6 +56,16 @@ namespace andywiecko.ECS
         public IReadOnlyList<T> GetComponents<T>() where T : IComponent => components[typeof(T)] as List<T>;
         public IEnumerable GetComponents(Type type) => components[type];
 
+        public void Clear()
+        {
+            foreach (var (t, l) in components)
+            {
+                l.Clear();
+                onAddActions[t] = default;
+                onRemoveActions[t] = default;
+            }
+        }
+
         public void Add<T>(T instance) where T : IComponent
         {
             var type = instance.GetType();
@@ -100,5 +110,8 @@ namespace andywiecko.ECS
                 Activator.CreateInstance(t, item1, item2, this);
             }
         }
+
+        public IEnumerator<KeyValuePair<Type, IList>> GetEnumerator() => components.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (this as IEnumerable<KeyValuePair<Type, IList>>).GetEnumerator();
     }
 }

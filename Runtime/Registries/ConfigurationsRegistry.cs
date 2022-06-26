@@ -1,12 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 namespace andywiecko.ECS
 {
     public class ConfigurationsRegistry : IEnumerable<KeyValuePair<Type, IConfiguration>>
     {
         public event Action OnRegistryChange;
         private readonly Dictionary<Type, IConfiguration> configs = new();
+
+
+        public void Clear()
+        {
+            configs.Clear();
+            OnRegistryChange = default;
+        }
 
         public T Get<T>() where T : class, IConfiguration => configs[typeof(T)] as T;
 
