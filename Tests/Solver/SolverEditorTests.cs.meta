@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 3e957281c3869ac4a9e79127a3b4cf99
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - solver: {fileID: 2573130365563758450, guid: cb7f8c96a2bd1c74aae3573eaecd315a, type: 3}
+  - actionsOrder: {fileID: 11400000, guid: cba6477c357445841ac6c8ac8054975a, type: 2}
+  - jobsOrder: {fileID: 11400000, guid: a9c3bb0fc97fa6347b42ee0802364806, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

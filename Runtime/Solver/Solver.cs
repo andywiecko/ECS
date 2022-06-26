@@ -7,30 +7,23 @@ namespace andywiecko.ECS
 {
     public class Solver : MonoBehaviour, ISolver
     {
+        public event Action OnScheduling;
+        public event Action OnJobsComplete;
+        public List<Func<JobHandle, JobHandle>> Jobs { get; } = new();
+
         [field: SerializeField]
         public World World { get; private set; } = default;
 
-        [field: SerializeField]
-        public SolverJobsOrder JobsOrder { get; private set; } = default;
+        [SerializeField]
+        private SolverJobsOrder jobsOrder = default;
 
-        [field: SerializeField]
-        public SolverActionsOrder ActionsOrder { get; private set; } = default;
-
-        public List<Func<JobHandle, JobHandle>> Jobs { get; } = new();
-        public event Action OnScheduling;
-        public event Action OnJobsComplete;
+        [SerializeField]
+        private SolverActionsOrder actionsOrder = default;
 
         private JobHandle dependencies = new();
 
-        private void Awake()
-        {
-            World.SystemsRegistry.OnRegistryChange += RegenerateSolverTasks;
-        }
-
-        private void Start()
-        {
-            RegenerateSolverTasks();
-        }
+        private void Awake() => World.SystemsRegistry.OnRegistryChange += RegenerateSolverTasks;
+        private void Start() => RegenerateSolverTasks();
 
         private void Update()
         {
@@ -48,10 +41,7 @@ namespace andywiecko.ECS
             return dependencies;
         }
 
-        private void OnDestroy()
-        {
-            World.SystemsRegistry.OnRegistryChange -= RegenerateSolverTasks;
-        }
+        private void OnDestroy() => World.SystemsRegistry.OnRegistryChange -= RegenerateSolverTasks;
 
         private void RegenerateSolverTasks()
         {
@@ -59,8 +49,8 @@ namespace andywiecko.ECS
             OnScheduling = null;
             OnJobsComplete = null;
 
-            JobsOrder.GenerateJobs(this, World);
-            ActionsOrder.GenerateActions(this, World);
+            jobsOrder.GenerateJobs(this, World);
+            actionsOrder.GenerateActions(this, World);
         }
     }
 }
