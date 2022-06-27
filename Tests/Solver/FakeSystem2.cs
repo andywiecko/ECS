@@ -2,7 +2,7 @@ using Unity.Jobs;
 
 namespace andywiecko.ECS.Editor.Tests
 {
-    public class FakeSystem2 : ISystem
+    public class FakeSystem2 : BaseSystem
     {
         [SolverAction]
         private void Method1()
@@ -10,7 +10,7 @@ namespace andywiecko.ECS.Editor.Tests
 
         }
 
-        public JobHandle Schedule(JobHandle dependencies)
+        public override JobHandle Schedule(JobHandle dependencies)
         {
             throw new System.NotImplementedException();
         }

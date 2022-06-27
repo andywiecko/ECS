@@ -25,7 +25,7 @@ namespace andywiecko.ECS.Editor
             root.Add(worldField);
 
             var categories = new Dictionary<string, VisualElement>();
-            var systems = new VisualElement() { name = "Systems" };
+            var systems = new VisualElement() { name = "serializedSystems" };
             RebuildSystems(systems, categories);
             root.Add(systems);
 
@@ -44,7 +44,7 @@ namespace andywiecko.ECS.Editor
         {
             systems.Clear();
             categories.Clear();
-            foreach (SerializedProperty i in serializedObject.FindProperty("<Systems>k__BackingField"))
+            foreach (SerializedProperty i in serializedObject.FindProperty("serializedSystems"))
             {
                 var line = new VisualElement()
                 {

@@ -10,7 +10,7 @@ namespace andywiecko.ECS
     public class SystemsManager : MonoBehaviour
     {
         [Serializable]
-        public class SerializedTypeBoolTuple
+        private class SerializedTypeBoolTuple
         {
             public SerializedType type;
             public bool value = true;
@@ -19,11 +19,13 @@ namespace andywiecko.ECS
         [field: SerializeField, HideInInspector]
         public World World { get; private set; } = default;
 
-        [field: SerializeField, HideInInspector]
-        public List<SerializedTypeBoolTuple> Systems { get; private set; } = new();
+        [SerializeField, HideInInspector]
+        private List<SerializedTypeBoolTuple> serializedSystems = new();
 
         private readonly Dictionary<Type, ISystem> systems = new();
         private readonly Dictionary<Type, int> systemsToBoolTuple = new();
+
+        public void SetSystemActive<T>(bool value) where T : BaseSystem => SetSystemActive(typeof(T), value);
 
         public void SetSystemActive(Type type, bool value)
         {
@@ -41,13 +43,16 @@ namespace andywiecko.ECS
                 World.SystemsRegistry.Remove(systems[type]);
             }
 
-            Systems[systemsToBoolTuple[type]].value = value;
+            serializedSystems[systemsToBoolTuple[type]].value = value;
         }
 
         private void Awake()
         {
+            systems.Clear();
+            systemsToBoolTuple.Clear();
+
             var i = 0;
-            foreach (var tuple in Systems)
+            foreach (var tuple in serializedSystems)
             {
                 var t = tuple.type.Type;
                 var s = Activator.CreateInstance(t) as BaseSystem;
@@ -63,7 +68,7 @@ namespace andywiecko.ECS
         {
             foreach (var (t, _) in systems)
             {
-                var tuple = Systems[systemsToBoolTuple[t]];
+                var tuple = serializedSystems[systemsToBoolTuple[t]];
                 SetSystemActive(t, tuple.value);
             }
         }
@@ -72,9 +77,17 @@ namespace andywiecko.ECS
         {
             if (!Application.isPlaying)
             {
+                // HACK:
+                //   For unknown reason static dicts don't survive when saving asset,
+                //   but OnValidate is called during save.
+                if (TypeCacheUtils.SolverActions.GuidToType.Count == 0)
+                {
+                    return;
+                }
+
                 if (World == null)
                 {
-                    Systems.Clear();
+                    this.serializedSystems.Clear();
                     return;
                 }
 
@@ -82,16 +95,19 @@ namespace andywiecko.ECS
                 var types = TypeCacheUtils.Systems.AssemblyToTypes
                     .Where(i => worldAssemblies.Contains(i.Key))
                     .SelectMany(i => i.Value);
-                Systems.RemoveAll(i => !types.Contains(i.type.Type));
-                var serializedSystems = Systems.Select(i => i.type.Type);
+                this.serializedSystems.RemoveAll(i => !types.Contains(i.type.Type));
+                var serializedSystems = this.serializedSystems.Select(i => i.type.Type);
 
                 foreach (var t in types.Except(serializedSystems))
                 {
-                    SerializedTypeBoolTuple tuple = new() { type = new(t, TypeCacheUtils.Systems.TypeToGuid[t]) };
-                    Systems.Add(tuple);
+                    if (TypeCacheUtils.Systems.TypeToGuid.TryGetValue(t, out var guid))
+                    {
+                        SerializedTypeBoolTuple tuple = new() { type = new(t, guid) };
+                        this.serializedSystems.Add(tuple);
+                    }
                 }
 
-                foreach (var t in Systems)
+                foreach (var t in this.serializedSystems)
                 {
                     var type = t.type;
                     var guid = type.Guid;
