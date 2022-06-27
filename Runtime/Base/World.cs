@@ -21,6 +21,13 @@ namespace andywiecko.ECS
         private UnityEditorInternal.AssemblyDefinitionAsset[] targetAssemblies = { };
 #endif
 
+        public void Clear()
+        {
+            ConfigurationsRegistry.Clear();
+            ComponentsRegistry.Clear();
+            SystemsRegistry.Clear();
+        }
+
         private void OnValidate()
         {
             TargetAssemblies = targetAssemblies?
