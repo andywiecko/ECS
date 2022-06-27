@@ -3,15 +3,12 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using Unity.Collections;
 
 namespace andywiecko.ECS.Editor.Tests
 {
     public class ComponentsTupleEditorTests
     {
-        private static Type[] TargetTypes => typeof(ComponentsTupleEditorTests).GetNestedTypes(BindingFlags.NonPublic);
-
         private interface IFake1 : IComponent { }
         private interface IFake2 : IComponent { }
         private interface IFake3 : IComponent { }
@@ -43,6 +40,11 @@ namespace andywiecko.ECS.Editor.Tests
             }
         }
 
+        private class SimplifiedFake12 : ComponentsTuple<IFake1, IFake2>, IFake12
+        {
+            public SimplifiedFake12(IFake1 f1, IFake2 f2, ComponentsRegistry c) : base(f1, f2, c) { }
+        }
+
         private ComponentsRegistry registry;
         private Fake12 tuple;
 
@@ -63,21 +65,23 @@ namespace andywiecko.ECS.Editor.Tests
         {
             var f1 = new Fake1();
             var f2 = new Fake2();
-            registry = new(TargetTypes);
+            var f3 = new Fake3();
+            registry = new(new[] { typeof(Fake1), typeof(Fake2), typeof(Fake12), typeof(Fake3) });
             registry.SubscribeOnAdd<IFake12>(i => tuple = i as Fake12);
 
             registry.Add(f1);
             registry.Add(f2);
+            registry.Add(f3);
 
             Assert.That(tuple.ComponentId, Is.EqualTo(new Id<IComponent>(0)));
             Assert.That(tuple.Fake1, Is.EqualTo(f1));
             Assert.That(tuple.Fake2, Is.EqualTo(f2));
             var expected = new Dictionary<Type, IList>
             {
-                [typeof(IComponent)] = new IComponent[] { f1, tuple, f2 },
+                [typeof(IComponent)] = new IComponent[] { f1, tuple, f2, f3 },
                 [typeof(IFake1)] = new[] { f1 },
                 [typeof(IFake2)] = new[] { f2 },
-                [typeof(IFake3)] = new IFake3[] { },
+                [typeof(IFake3)] = new[] { f3 },
                 [typeof(IFake12)] = new[] { tuple }
             };
             Assert.That(registry, Is.EquivalentTo(expected));
@@ -88,7 +92,7 @@ namespace andywiecko.ECS.Editor.Tests
         {
             var f1 = new Fake1();
             var f2 = new Fake2();
-            registry = new(TargetTypes);
+            registry = new(new[] { typeof(Fake1), typeof(Fake2), typeof(Fake12), typeof(Fake3) });
             registry.SubscribeOnAdd<IFake12>(i => tuple = i as Fake12);
 
             registry.Add(f2);
@@ -112,7 +116,7 @@ namespace andywiecko.ECS.Editor.Tests
         {
             var f1 = new Fake1() { ComponentId = new(0) };
             var f2 = new Fake2() { ComponentId = new(0) };
-            registry = new(TargetTypes);
+            registry = new(new[] { typeof(Fake1), typeof(Fake2), typeof(Fake12), typeof(Fake3) });
             registry.SubscribeOnAdd<IFake12>(i => tuple = i as Fake12);
 
             registry.Add(f1);
@@ -137,7 +141,7 @@ namespace andywiecko.ECS.Editor.Tests
         {
             var f1 = new Fake1() { ComponentId = new(0) };
             var f2 = new Fake2() { ComponentId = new(0) };
-            registry = new(TargetTypes);
+            registry = new(new[] { typeof(Fake1), typeof(Fake2), typeof(Fake12), typeof(Fake3) });
             registry.SubscribeOnAdd<IFake12>(i => tuple = i as Fake12);
 
             registry.Add(f1);
@@ -164,7 +168,7 @@ namespace andywiecko.ECS.Editor.Tests
             var f1b = new Fake1() { ComponentId = new(1) };
             var f2 = new Fake2() { ComponentId = new(0) };
             Fake12.When = (a, b) => a.ComponentId == b.ComponentId;
-            registry = new(TargetTypes);
+            registry = new(new[] { typeof(Fake1), typeof(Fake2), typeof(Fake12), typeof(Fake3) });
             registry.SubscribeOnAdd<IFake12>(i => tuple = i as Fake12);
 
             registry.Add(f1a);
@@ -189,15 +193,29 @@ namespace andywiecko.ECS.Editor.Tests
         {
             var f1 = new Fake1() { ComponentId = new(0) };
             var f2 = new Fake2() { ComponentId = new(0) };
-            var f12 = default(Fake12);
-            registry = new(TargetTypes);
-            registry.SubscribeOnAdd<IFake12>(i => f12 = i as Fake12);
+            registry = new(new[] { typeof(Fake1), typeof(Fake2), typeof(Fake12) });
+            registry.SubscribeOnAdd<IFake12>(i => tuple = i as Fake12);
 
             registry.Add(f1);
             registry.Add(f2);
             registry.Remove(f1);
 
-            Assert.That(f12.Disposable.Value.IsCreated, Is.False);
+            Assert.That(tuple.Disposable.Value.IsCreated, Is.False);
+        }
+
+        [Test]
+        public void SimplifiedTupleTest()
+        {
+            var f1 = new Fake1();
+            var f2 = new Fake2();
+            var t = default(SimplifiedFake12);
+            registry = new(new[] { typeof(Fake1), typeof(Fake2), typeof(SimplifiedFake12) });
+            registry.SubscribeOnAdd<IFake12>(i => t = i as SimplifiedFake12);
+
+            registry.Add(f1);
+            registry.Add(f2);
+
+            Assert.That(t, Is.Not.Null);
         }
     }
 }
