@@ -7,13 +7,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04e119b7a44b6384ea66a6bf04de193a, type: 3}
   m_Name: DefaultSolverActionsOrderTestAsset
   m_EditorClassIdentifier: 
   <TargetAssemblies>k__BackingField:
-  - andywiecko.ECS.Tests
+  - andywiecko.ECS.Editor.Tests
   targetAssemblies:
   - {fileID: 5897886265953266890, guid: ef6de0deabc32c54994328f421136610, type: 3}
   onScheduling:
@@ -21,16 +21,16 @@ MonoBehaviour:
     <SerializedType>k__BackingField:
       <Guid>k__BackingField: 82740bc62292cf045ac40443ec73708e
       <AssemblyQualifiedName>k__BackingField: andywiecko.ECS.Editor.Tests.FakeSystem1,
-        andywiecko.ECS.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        andywiecko.ECS.Editor.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   - <MethodName>k__BackingField: Method2
     <SerializedType>k__BackingField:
       <Guid>k__BackingField: 82740bc62292cf045ac40443ec73708e
       <AssemblyQualifiedName>k__BackingField: andywiecko.ECS.Editor.Tests.FakeSystem1,
-        andywiecko.ECS.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        andywiecko.ECS.Editor.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   onJobsCompletion:
   - <MethodName>k__BackingField: Method1
     <SerializedType>k__BackingField:
       <Guid>k__BackingField: ad741071accbe034ea1b66f9432c9637
       <AssemblyQualifiedName>k__BackingField: andywiecko.ECS.Editor.Tests.FakeSystem2,
-        andywiecko.ECS.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        andywiecko.ECS.Editor.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   undefinedMethods: []

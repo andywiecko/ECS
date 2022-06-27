@@ -1,15 +1,13 @@
 {
-    "name": "andywiecko.ECS.Tests",
+	"name": "andywiecko.ECS.Tests",
     "rootNamespace": "",
     "references": [
-        "andywiecko.BurstCollections",
+		"andywiecko.BurstCollections",
         "andywiecko.ECS",
         "Unity.Mathematics",
         "Unity.Jobs"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
