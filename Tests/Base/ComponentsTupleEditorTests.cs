@@ -78,7 +78,7 @@ namespace andywiecko.ECS.Editor.Tests
             Assert.That(tuple.Fake2, Is.EqualTo(f2));
             var expected = new Dictionary<Type, IList>
             {
-                [typeof(IComponent)] = new IComponent[] { f1, tuple, f2, f3 },
+                [typeof(IComponent)] = new IComponent[] { f1, f2, tuple, f3 },
                 [typeof(IFake1)] = new[] { f1 },
                 [typeof(IFake2)] = new[] { f2 },
                 [typeof(IFake3)] = new[] { f3 },
@@ -179,7 +179,7 @@ namespace andywiecko.ECS.Editor.Tests
             Assert.That(tuple.Fake2, Is.EqualTo(f2));
             var expected = new Dictionary<Type, IList>
             {
-                [typeof(IComponent)] = new IComponent[] { f1a, f1b, tuple, f2 },
+                [typeof(IComponent)] = new IComponent[] { f1a, f1b, f2, tuple },
                 [typeof(IFake1)] = new[] { f1a, f1b },
                 [typeof(IFake2)] = new[] { f2 },
                 [typeof(IFake3)] = new IFake3[] { },

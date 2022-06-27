@@ -15,6 +15,7 @@ namespace andywiecko.ECS
             OnRegistryChange = default;
         }
 
+        public bool TryGetSystem<T>(out ISystem system) => TryGetSystem(typeof(T), out system);
         public bool TryGetSystem(Type type, out ISystem system) => systems.TryGetValue(type, out system);
         public T Get<T>() where T : class, ISystem => systems[typeof(T)] as T;
 

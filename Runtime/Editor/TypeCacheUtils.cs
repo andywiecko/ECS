@@ -143,7 +143,7 @@ namespace andywiecko.ECS.Editor
             static Systems()
             {
                 Types = TypeCache
-                    .GetTypesDerivedFrom<ISystem>()
+                    .GetTypesDerivedFrom<BaseSystem>()
                     .Where(i => !i.IsAbstract)
                     .ToArray();
 
