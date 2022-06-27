@@ -44,6 +44,6 @@ namespace andywiecko.ECS
         }
 
         public IEnumerator<KeyValuePair<Type, ISystem>> GetEnumerator() => systems.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => (systems as IEnumerable<KeyValuePair<Type, ISystem>>).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (this as IEnumerable<KeyValuePair<Type, ISystem>>).GetEnumerator();
     }
 }
