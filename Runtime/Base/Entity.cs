@@ -30,6 +30,7 @@ namespace andywiecko.ECS
             {
                 reference.Dispose();
             }
+            refsToDisposeOnDestroy.Clear();
         }
     }
 }

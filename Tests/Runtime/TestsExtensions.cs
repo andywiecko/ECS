@@ -16,10 +16,13 @@ namespace andywiecko.ECS.Editor.Tests
 
             public UnityCallbacks(MonoBehaviour monoBehaviour) => this.monoBehaviour = monoBehaviour;
 
-            public void Awake() => Invoke("Awake");
-            public void Start() => Invoke("Start");
-            public void Update() => Invoke("Update");
-            public void OnDestroy() => Invoke("OnDestroy");
+            public void Awake() => Invoke(nameof(Awake));
+            public void Start() => Invoke(nameof(Start));
+            public void Update() => Invoke(nameof(Update));
+            public void OnDestroy() => Invoke(nameof(OnDestroy));
+            public void OnValidate() => Invoke(nameof(OnValidate));
+            public void OnEnable() => Invoke(nameof(OnEnable));
+            public void OnDisable() => Invoke(nameof(OnDisable));
 
             public void Invoke(string callback) => monoBehaviour
                 .GetType()
