@@ -15,6 +15,12 @@ namespace andywiecko.ECS
         protected IReadOnlyList<TComponent> References => World.ComponentsRegistry.GetComponents<TComponent>();
     }
 
+    public abstract class BaseSystemWithConfiguration<TConfiguration> : BaseSystem
+        where TConfiguration : class, IConfiguration
+    {
+        protected TConfiguration Configuration => World.ConfigurationsRegistry.Get<TConfiguration>();
+    }
+
     public abstract class BaseSystemWithConfiguration<TComponent, TConfiguration> : BaseSystem<TComponent>
         where TComponent : IComponent
         where TConfiguration : class, IConfiguration
