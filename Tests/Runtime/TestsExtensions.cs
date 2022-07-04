@@ -5,16 +5,13 @@ namespace andywiecko.ECS.Editor.Tests
 {
     public static class TestsExtensions
     {
-        public static UnityCallbacks InvokeUnityCallback(this MonoBehaviour monoBehaviour)
-        {
-            return new UnityCallbacks(monoBehaviour);
-        }
+        public static UnityCallbacks InvokeUnityCallback(this Object @object) => new(@object);
 
         public class UnityCallbacks
         {
-            private readonly MonoBehaviour monoBehaviour;
+            private readonly Object @object;
 
-            public UnityCallbacks(MonoBehaviour monoBehaviour) => this.monoBehaviour = monoBehaviour;
+            public UnityCallbacks(Object @object) => this.@object = @object;
 
             public void Awake() => Invoke(nameof(Awake));
             public void Start() => Invoke(nameof(Start));
@@ -24,10 +21,10 @@ namespace andywiecko.ECS.Editor.Tests
             public void OnEnable() => Invoke(nameof(OnEnable));
             public void OnDisable() => Invoke(nameof(OnDisable));
 
-            public void Invoke(string callback) => monoBehaviour
+            public void Invoke(string callback) => @object
                 .GetType()
                 .GetMethod(callback, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
-                .Invoke(monoBehaviour, null);
+                .Invoke(@object, null);
         }
     }
 }
