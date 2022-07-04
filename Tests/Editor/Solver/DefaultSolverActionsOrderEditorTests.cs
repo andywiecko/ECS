@@ -59,12 +59,52 @@ namespace andywiecko.ECS.Editor.Tests
         {
             world = new();
             world.SystemsRegistry.Add<FakeSystem1>(new());
+            world.SystemsRegistry.Add<FakeSystem2>(new());
             solver = new();
 
             solverActionsOrder.GenerateActions(solver, world);
 
             Assert.That(solver.OnSchedulingInvocationList(), Has.Length.EqualTo(2));
-            Assert.That(solver.OnJobsCompleteInvocationList(), Is.Null);
+            Assert.That(solver.OnJobsCompleteInvocationList(), Has.Length.EqualTo(1));
+        }
+
+        [Test]
+        public void OnValidateTest()
+        {
+            // HACK: this test setup is rather a hack.
+            // Scriptable objects are validated during editor,
+            // so there is no way to provide object which should be validated during test.
+            // We "mock" here the situation where one of the system is not present
+            // at serialized object at all (corresponds to situation when new (undefined) system
+            // is created in project), and the other system which corresponds to
+            // transition from "Undefined" to "OnScheduling".
+            var instance = Instantiate(solverActionsOrder);
+            var so = new UnityEditor.SerializedObject(instance);
+            var onScheduling = so.FindProperty("onScheduling");
+            onScheduling.arraySize = 0;
+            so.ApplyModifiedProperties();
+
+            instance.InvokeUnityCallback().OnValidate();
+
+            so = new UnityEditor.SerializedObject(instance);
+            var undefinedMethods = so.FindProperty("undefinedMethods");
+            var action = undefinedMethods
+                .GetArrayElementAtIndex(0)
+                .FindPropertyRelative("<Action>k__BackingField");
+            action.intValue = 0;
+            so.ApplyModifiedProperties();
+
+            instance.InvokeUnityCallback().OnValidate();
+
+            world = new();
+            world.SystemsRegistry.Add<FakeSystem1>(new());
+            world.SystemsRegistry.Add<FakeSystem2>(new());
+            solver = new();
+
+            instance.GenerateActions(solver, world);
+
+            Assert.That(solver.OnSchedulingInvocationList(), Has.Length.EqualTo(1));
+            Assert.That(solver.OnJobsCompleteInvocationList(), Has.Length.EqualTo(1));
         }
     }
 }

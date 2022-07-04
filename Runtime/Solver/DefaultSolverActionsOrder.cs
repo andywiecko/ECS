@@ -12,21 +12,21 @@ using UnityEngine;
 
 namespace andywiecko.ECS
 {
-    [Serializable]
-    public class UnconfiguredMethod
-    {
-        [field: SerializeField]
-        public SerializedMethod Method { get; private set; }
-
-        [field: SerializeField]
-        public SolverAction Action { get; private set; } = SolverAction.Undefined;
-
-        public UnconfiguredMethod(MethodInfo method, string guid) => Method = new(method, guid);
-    }
-
     [CreateAssetMenu(fileName = "DefaultSolverActionsOrder", menuName = "ECS/Solver/Default Solver Actions Order")]
     public class DefaultSolverActionsOrder : SolverActionsOrder, IEnumerable<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>>
     {
+        [Serializable]
+        private class UnconfiguredMethod
+        {
+            [field: SerializeField]
+            public SerializedMethod Method { get; private set; }
+
+            [field: SerializeField]
+            public SolverAction Action { get; private set; } = SolverAction.Undefined;
+
+            public UnconfiguredMethod(MethodInfo method, string guid) => Method = new(method, guid);
+        }
+
         private List<SerializedMethod> GetListAtAction(SolverAction action) => action switch
         {
             SolverAction.OnScheduling => onScheduling,
@@ -95,19 +95,17 @@ namespace andywiecko.ECS
                 .Where(i => i != null)
                 .Select(i => JObject.Parse(i.text)["name"].ToString()).ToArray();
 
-            ValidateMethods();
+            // HACK:
+            //   For unknown reason static dicts don't survive when saving asset,
+            //   but OnValidate is called during save.
+            if (TypeCacheUtils.SolverActions.GuidToType.Count != 0)
+            {
+                ValidateMethods();
+            }
         }
 
         private void ValidateMethods()
         {
-            // HACK:
-            //   For unknown reason static dicts don't survive when saving asset,
-            //   but OnValidate is called during save.
-            if (TypeCacheUtils.SolverActions.GuidToType.Count == 0)
-            {
-                return;
-            }
-
             var methodsToAssign = undefinedMethods.Where(t => t.Action != SolverAction.Undefined);
             foreach (var u in methodsToAssign)
             {
