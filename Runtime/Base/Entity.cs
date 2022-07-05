@@ -8,8 +8,7 @@ namespace andywiecko.ECS
     [DisallowMultipleComponent]
     public abstract class Entity : MonoBehaviour, IEntity
     {
-        private static readonly IdCounter<IEntity> Counter = new(); // Clean this to be related with world itself
-        public Id<IEntity> EntityId { get; } = Counter.GetNext();
+        public Id<IEntity> EntityId { get; private set; } = Id<IEntity>.Invalid;
 
         [field: SerializeField]
         public World World { get; private set; } = default;
@@ -22,6 +21,11 @@ namespace andywiecko.ECS
             {
                 refsToDisposeOnDestroy.Add(reference);
             }
+        }
+
+        protected virtual void Awake()
+        {
+            EntityId = World.EntitiesCounter.GetNext();
         }
 
         protected virtual void OnDestroy()

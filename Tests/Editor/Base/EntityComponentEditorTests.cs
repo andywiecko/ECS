@@ -1,7 +1,5 @@
 using andywiecko.ECS.Tests;
 using NUnit.Framework;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -30,8 +28,8 @@ namespace andywiecko.ECS.Editor.Tests
         public void TearDown()
         {
             entity.InvokeUnityCallback().OnDestroy();
-            component1.InvokeUnityCallback().OnDestroy(); ;
-            component2.InvokeUnityCallback().OnDestroy(); ;
+            component1.InvokeUnityCallback().OnDestroy();
+            component2.InvokeUnityCallback().OnDestroy();
         }
 
         [Test]
@@ -97,6 +95,13 @@ namespace andywiecko.ECS.Editor.Tests
 
             Assert.That(component1.EntityId, Is.EqualTo(entity.EntityId));
             Assert.That(component2.EntityId, Is.EqualTo(entity.EntityId));
+        }
+
+        [Test]
+        public void EntityEditorSelectionTest()
+        {
+            // HACK: tricky solution for testing the entity editor.
+            UnityEditor.Selection.activeObject = entity;
         }
     }
 }

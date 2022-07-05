@@ -15,7 +15,6 @@ namespace andywiecko.ECS
 
         public MethodInfo MethodInfo => Type.GetMethod(MethodName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
         public Type Type => SerializedType.Type;
-        public string Guid => SerializedType.Guid;
         public (MethodInfo methodInfo, Type type) Value => (MethodInfo, Type);
         public void Deconstruct(out MethodInfo m, out Type t) => (m, t) = Value;
 

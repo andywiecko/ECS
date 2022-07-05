@@ -7,8 +7,9 @@ namespace andywiecko.ECS.Tests
     {
         public Ref<NativeArray<int>> Data { get; private set; }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             DisposeOnDestroy(
                 Data = new(new(1, Allocator.Persistent))
             );

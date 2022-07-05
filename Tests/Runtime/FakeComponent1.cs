@@ -6,6 +6,7 @@ namespace andywiecko.ECS.Tests
 {
     public interface IFakeComponent1 : IComponent { }
 
+    [Category("Fake Category 1")]
     [RequireComponent(typeof(FakeEntity))]
     public class FakeComponent1 : BaseComponent, IFakeComponent1
     {
