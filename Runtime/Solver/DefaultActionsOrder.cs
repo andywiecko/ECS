@@ -12,8 +12,8 @@ using UnityEngine;
 
 namespace andywiecko.ECS
 {
-    [CreateAssetMenu(fileName = "DefaultSolverActionsOrder", menuName = "ECS/Solver/Default Solver Actions Order")]
-    public class DefaultSolverActionsOrder : SolverActionsOrder, IEnumerable<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>>
+    [CreateAssetMenu(fileName = "DefaultActionsOrder", menuName = "ECS/Solver/Default Actions Order")]
+    public class DefaultActionsOrder : ActionsOrder, IEnumerable<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>>
     {
         [Serializable]
         private class UnconfiguredMethod

@@ -1,6 +1,6 @@
 namespace andywiecko.ECS.Editor.Tests
 {
-    internal class FakeSolverActionsOrder : SolverActionsOrder
+    internal class FakeActionsOrder : ActionsOrder
     {
         public int GenerationCount { get; private set; } = 0;
         public int UpdateCount { get; private set; } = 0;

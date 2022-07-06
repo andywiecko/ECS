@@ -9,7 +9,7 @@ namespace andywiecko.ECS.Editor.Tests
         private Solver solver = default;
 
         [SerializeField]
-        private FakeSolverActionsOrder actionsOrder = default;
+        private FakeActionsOrder actionsOrder = default;
 
         [SerializeField]
         private FakeSolverJobsOrder jobsOrder = default;

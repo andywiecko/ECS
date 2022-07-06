@@ -18,7 +18,7 @@ namespace andywiecko.ECS
         private SolverJobsOrder jobsOrder = default;
 
         [SerializeField]
-        private SolverActionsOrder actionsOrder = default;
+        private ActionsOrder actionsOrder = default;
 
         private JobHandle dependencies = new();
 

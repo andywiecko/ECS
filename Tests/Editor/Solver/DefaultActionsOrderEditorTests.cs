@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace andywiecko.ECS.Editor.Tests
 {
-    public class DefaultSolverActionsOrderEditorTests : UnityEditor.Editor
+    public class DefaultActionsOrderEditorTests : UnityEditor.Editor
     {
         [SerializeField]
-        private DefaultSolverActionsOrder solverActionsOrder;
+        private DefaultActionsOrder solverActionsOrder;
 
         private class FakeSolver : ISolver
         {
