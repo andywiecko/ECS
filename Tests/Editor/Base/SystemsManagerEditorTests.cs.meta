@@ -4,7 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - managerAsset: {fileID: 3397557092651314185, guid: b5de71d88e76ab04c8032f888861f583, type: 3}
+  - asset: {fileID: 3397557092651314185, guid: b5de71d88e76ab04c8032f888861f583, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

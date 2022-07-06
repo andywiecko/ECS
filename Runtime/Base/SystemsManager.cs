@@ -80,39 +80,42 @@ namespace andywiecko.ECS
                 // HACK:
                 //   For unknown reason static dicts don't survive when saving asset,
                 //   but OnValidate is called during save.
-                if (TypeCacheUtils.SolverActions.GuidToType.Count == 0)
+                if (TypeCacheUtils.SolverActions.GuidToType.Count != 0)
                 {
-                    return;
+                    ValidateSystems();
                 }
+            }
+        }
 
-                if (World == null)
+        private void ValidateSystems()
+        {
+            if (World == null)
+            {
+                this.serializedSystems.Clear();
+                return;
+            }
+
+            var worldAssemblies = World.TargetAssemblies.Select(i => Assembly.Load(i));
+            var types = TypeCacheUtils.Systems.AssemblyToTypes
+                .Where(i => worldAssemblies.Contains(i.Key))
+                .SelectMany(i => i.Value);
+            this.serializedSystems.RemoveAll(i => !types.Contains(i.type.Type));
+            var serializedSystems = this.serializedSystems.Select(i => i.type.Type);
+
+            foreach (var t in types.Except(serializedSystems))
+            {
+                if (TypeCacheUtils.Systems.TypeToGuid.TryGetValue(t, out var guid))
                 {
-                    this.serializedSystems.Clear();
-                    return;
+                    SerializedTypeBoolTuple tuple = new() { type = new(t, guid) };
+                    this.serializedSystems.Add(tuple);
                 }
+            }
 
-                var worldAssemblies = World.TargetAssemblies.Select(i => Assembly.Load(i));
-                var types = TypeCacheUtils.Systems.AssemblyToTypes
-                    .Where(i => worldAssemblies.Contains(i.Key))
-                    .SelectMany(i => i.Value);
-                this.serializedSystems.RemoveAll(i => !types.Contains(i.type.Type));
-                var serializedSystems = this.serializedSystems.Select(i => i.type.Type);
-
-                foreach (var t in types.Except(serializedSystems))
-                {
-                    if (TypeCacheUtils.Systems.TypeToGuid.TryGetValue(t, out var guid))
-                    {
-                        SerializedTypeBoolTuple tuple = new() { type = new(t, guid) };
-                        this.serializedSystems.Add(tuple);
-                    }
-                }
-
-                foreach (var t in this.serializedSystems)
-                {
-                    var type = t.type;
-                    var guid = type.Guid;
-                    type.Validate(TypeCacheUtils.Systems.GuidToType[guid]);
-                }
+            foreach (var t in this.serializedSystems)
+            {
+                var type = t.type;
+                var guid = type.Guid;
+                type.Validate(TypeCacheUtils.Systems.GuidToType[guid]);
             }
         }
     }
