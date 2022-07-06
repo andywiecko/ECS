@@ -102,6 +102,12 @@ namespace andywiecko.ECS.Editor.Tests
         {
             // HACK: tricky solution for testing the entity editor.
             UnityEditor.Selection.activeObject = entity;
+
+            // Regarding the measuring the test coverage for category attribute,
+            // it is not guaranteed that constructor will be called, 
+            // since attributes can be considered as static objects.
+            var category = new CategoryAttribute("qwe");
+            Assert.That(category.Name, Is.EqualTo("qwe"));
         }
     }
 }
