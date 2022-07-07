@@ -15,7 +15,7 @@ namespace andywiecko.ECS
         public World World { get; private set; } = default;
 
         [SerializeField]
-        private SolverJobsOrder jobsOrder = default;
+        private JobsOrder jobsOrder = default;
 
         [SerializeField]
         private ActionsOrder actionsOrder = default;

@@ -61,6 +61,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <TargetAssemblies>k__BackingField:
-  - andywiecko.ECS.Tests
+  - andywiecko.ECS.Editor.Tests
   targetAssemblies:
   - {fileID: 5897886265953266890, guid: ef6de0deabc32c54994328f421136610, type: 3}

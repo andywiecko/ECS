@@ -12,7 +12,7 @@ namespace andywiecko.ECS.Editor.Tests
         private FakeActionsOrder actionsOrder = default;
 
         [SerializeField]
-        private FakeSolverJobsOrder jobsOrder = default;
+        private FakeJobsOrder jobsOrder = default;
 
         [SetUp]
         public void SetUp()
