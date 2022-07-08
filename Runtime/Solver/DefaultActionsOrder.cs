@@ -147,7 +147,7 @@ namespace andywiecko.ECS
                 {
                     foreach (var l in list)
                     {
-                        l.Validate(l.Type);
+                        l.Validate(TypeCacheUtils.Systems.GuidToType[l.SerializedType.Guid]);
                     }
                 }
             }
