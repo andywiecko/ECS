@@ -1,6 +1,7 @@
 using andywiecko.ECS.Editor;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,12 +10,12 @@ using UnityEngine;
 namespace andywiecko.ECS
 {
     [CreateAssetMenu(fileName = "DefaultJobsOrder", menuName = "ECS/Solver/Default Jobs Order")]
-    public class DefaultJobsOrder : JobsOrder
+    public class DefaultJobsOrder : JobsOrder, IEnumerable<Type>
     {
         private enum SolverJob
         {
-            Enabled,
-            Undefined
+            Undefined = -1,
+            Enabled
         }
 
         [Serializable]
@@ -38,6 +39,9 @@ namespace andywiecko.ECS
 
         [field: SerializeField, HideInInspector]
         public string[] TargetAssemblies { get; private set; } = { };
+        private IEnumerable<Type> TargetTypes => TargetAssemblies
+            .Select(i => Assembly.Load(i))
+            .SelectMany(i => TypeCacheUtils.Systems.AssemblyToTypes[i]);
 
 #if UNITY_EDITOR
         [SerializeField]
@@ -51,7 +55,7 @@ namespace andywiecko.ECS
         [SerializeField]
         private List<UnconfiguredType> undefinedTypes = new();
 
-        private void Awake() => ValidateTypes();
+        private void Awake() => ValidateSerializedTypes();
 
         private void OnValidate()
         {
@@ -64,34 +68,50 @@ namespace andywiecko.ECS
             //   but OnValidate is called during save.
             if (TypeCacheUtils.SolverActions.GuidToType.Count != 0)
             {
-                ValidateTypes();
+                ValidateSerializedTypes();
             }
         }
 
-        private void ValidateTypes()
+        private void ValidateSerializedTypes()
+        {
+            RemoveBadTypes();
+            AssignEnabledTypes();
+            FillUndefinedTypes();
+            ValidateEnabledTypes();
+        }
+
+        private void RemoveBadTypes()
         {
             enabledTypes.RemoveAll(i => !TypeCacheUtils.Systems.GuidToType.ContainsKey(i.Guid));
             undefinedTypes.RemoveAll(i => !TypeCacheUtils.Systems.GuidToType.ContainsKey(i.Type.Guid));
             enabledTypes = enabledTypes.DistinctBy(i => i.Guid).ToList();
+        }
 
-            var methodsToAssign = undefinedTypes.Where(t => t.Job == SolverJob.Enabled);
-            foreach (var u in methodsToAssign)
+        private void AssignEnabledTypes()
+        {
+            var typesToAssign = undefinedTypes.Where(t => t.Job == SolverJob.Enabled);
+            foreach (var u in typesToAssign)
             {
                 enabledTypes.Add(u.Type);
             }
+        }
 
+        private void FillUndefinedTypes()
+        {
             undefinedTypes.Clear();
-            var targetTypes = TargetAssemblies
-               .Select(i => Assembly.Load(i))
-               .SelectMany(i => TypeCacheUtils.Systems.AssemblyToTypes[i]);
-            foreach (var t in targetTypes)
+
+            foreach (var t in TargetTypes)
             {
-                if (!enabledTypes.Select(i => i.Type).Contains(t))
+                if (!enabledTypes.Select(i => i.Type).Contains(t) &&
+                    TypeCacheUtils.Systems.TypeToGuid.TryGetValue(t, out var guid))
                 {
-                    undefinedTypes.Add(new(t, TypeCacheUtils.Systems.TypeToGuid[t]));
+                    undefinedTypes.Add(new(t, guid));
                 }
             }
+        }
 
+        private void ValidateEnabledTypes()
+        {
             foreach (var t in enabledTypes)
             {
                 t.Validate(TypeCacheUtils.Systems.GuidToType[t.Guid]);
@@ -111,5 +131,8 @@ namespace andywiecko.ECS
                 }
             }
         }
+
+        public IEnumerator<Type> GetEnumerator() => enabledTypes.Select(i => i.Type).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (this as IEnumerable<Type>).GetEnumerator();
     }
 }
