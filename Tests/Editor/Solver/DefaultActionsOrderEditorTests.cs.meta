@@ -4,7 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - solverActionsOrder: {fileID: 11400000, guid: 9508a672709bdbc4f9fac5248f69dda2, type: 2}
+  - asset: {fileID: 11400000, guid: 9508a672709bdbc4f9fac5248f69dda2, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

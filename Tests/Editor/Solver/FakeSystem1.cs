@@ -5,20 +5,11 @@ namespace andywiecko.ECS.Editor.Tests
     public class FakeSystem1 : BaseSystem
     {
         [SolverAction]
-        private void Method1()
-        {
-
-        }
+        private void Method1() { }
 
         [SolverAction]
-        private void Method2()
-        {
+        private void Method2() { }
 
-        }
-
-        public override JobHandle Schedule(JobHandle dependencies)
-        {
-            throw new System.NotImplementedException();
-        }
+        public override JobHandle Schedule(JobHandle dependencies) => dependencies;
     }
 }

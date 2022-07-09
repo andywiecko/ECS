@@ -7,12 +7,14 @@ namespace andywiecko.ECS.Editor.Tests
     public class ConfigurationHolderEditorTests : UnityEditor.Editor
     {
         [SerializeField]
+        private FakeConfigurationHolder asset;
+
         private FakeConfigurationHolder holder;
 
         [SetUp]
         public void SetUp()
         {
-            holder.World.Clear();
+            holder = Instantiate(asset);
         }
 
         [Test]

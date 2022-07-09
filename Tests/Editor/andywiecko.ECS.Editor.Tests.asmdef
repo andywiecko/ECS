@@ -4,7 +4,6 @@
     "references": [
         "andywiecko.BurstCollections",
         "andywiecko.ECS",
-        "Unity.Mathematics",
         "Unity.Jobs",
         "andywiecko.ECS.Tests"
     ],

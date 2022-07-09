@@ -6,8 +6,5 @@ namespace andywiecko.ECS.Tests
 
     [Category("Fake Category 2")]
     [RequireComponent(typeof(FakeEntity))]
-    public class FakeComponent2 : BaseComponent, IFakeComponent2
-    {
-
-    }
+    public class FakeComponent2 : BaseComponent, IFakeComponent2 { }
 }

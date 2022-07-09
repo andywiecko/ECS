@@ -10,7 +10,7 @@ namespace andywiecko.ECS.Editor.Tests
     public class DefaultActionsOrderEditorTests : UnityEditor.Editor
     {
         [SerializeField]
-        private DefaultActionsOrder solverActionsOrder;
+        private DefaultActionsOrder asset;
 
         private class FakeSolver : ISolver
         {
@@ -29,23 +29,29 @@ namespace andywiecko.ECS.Editor.Tests
             public SystemsRegistry SystemsRegistry { get; } = new();
         }
 
+        private DefaultActionsOrder actionsOrder;
         private FakeSolver solver;
         private FakeWorld world;
+
+        [SetUp]
+        public void SetUp()
+        {
+            world = new();
+            solver = new();
+            actionsOrder = Instantiate(asset);
+        }
 
         [Test]
         public void GenerateSolverActionsTest()
         {
-            world = new();
-            solver = new();
-
-            solverActionsOrder.GenerateActions(solver, world);
+            actionsOrder.GenerateActions(solver, world);
 
             var expected = new Dictionary<SolverAction, IReadOnlyList<(MethodInfo, Type)>>
             {
                 [SolverAction.OnScheduling] = new[] { action(typeof(FakeSystem1), "Method1"), action(typeof(FakeSystem1), "Method2") },
                 [SolverAction.OnJobsCompletion] = new[] { action(typeof(FakeSystem2), "Method1") }
             };
-            Assert.That(solverActionsOrder, Is.EquivalentTo(expected));
+            Assert.That(actionsOrder, Is.EquivalentTo(expected));
 
             static (MethodInfo, Type) action(Type t, string methodName)
             {
@@ -57,12 +63,10 @@ namespace andywiecko.ECS.Editor.Tests
         [Test]
         public void SubscribeSolverEventsTest()
         {
-            world = new();
             world.SystemsRegistry.Add<FakeSystem1>(new());
             world.SystemsRegistry.Add<FakeSystem2>(new());
-            solver = new();
 
-            solverActionsOrder.GenerateActions(solver, world);
+            actionsOrder.GenerateActions(solver, world);
 
             Assert.That(solver.OnSchedulingInvocationList(), Has.Length.EqualTo(2));
             Assert.That(solver.OnJobsCompleteInvocationList(), Has.Length.EqualTo(1));
@@ -78,7 +82,7 @@ namespace andywiecko.ECS.Editor.Tests
             // at serialized object at all (corresponds to situation when new (undefined) system
             // is created in project), and the other system which corresponds to
             // transition from "Undefined" to "OnScheduling".
-            var instance = Instantiate(solverActionsOrder);
+            var instance = Instantiate(actionsOrder);
             var so = new UnityEditor.SerializedObject(instance);
             var onScheduling = so.FindProperty("onScheduling");
             onScheduling.arraySize = 0;
@@ -96,10 +100,8 @@ namespace andywiecko.ECS.Editor.Tests
 
             instance.InvokeUnityCallback().OnValidate();
 
-            world = new();
             world.SystemsRegistry.Add<FakeSystem1>(new());
             world.SystemsRegistry.Add<FakeSystem2>(new());
-            solver = new();
 
             instance.GenerateActions(solver, world);
 

@@ -5,14 +5,8 @@ namespace andywiecko.ECS.Editor.Tests
     public class FakeSystem2 : BaseSystem
     {
         [SolverAction]
-        private void Method1()
-        {
+        private void Method1() { }
 
-        }
-
-        public override JobHandle Schedule(JobHandle dependencies)
-        {
-            throw new System.NotImplementedException();
-        }
+        public override JobHandle Schedule(JobHandle dependencies) => dependencies;
     }
 }
