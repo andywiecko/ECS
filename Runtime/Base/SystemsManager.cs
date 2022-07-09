@@ -12,18 +12,25 @@ namespace andywiecko.ECS
         [Serializable]
         private class SerializedTypeBoolTuple
         {
-            public SerializedType type;
-            public bool value = true;
+            public SerializedType Type = default;
+            public bool Value = true;
+            public void Deconstruct(out SerializedType type, out bool value) => (type, value) = (Type, Value);
         }
 
         [field: SerializeField, HideInInspector]
         public World World { get; private set; } = default;
 
+        private IEnumerable<Type> TargetTypes => TypeCacheUtils.Systems.AssemblyToTypes
+            .Where(i => World.TargetAssemblies
+                .Select(i => Assembly.Load(i))
+                .Contains(i.Key))
+            .SelectMany(i => i.Value);
+
         [SerializeField, HideInInspector]
         private List<SerializedTypeBoolTuple> serializedSystems = new();
 
         private readonly Dictionary<Type, ISystem> systems = new();
-        private readonly Dictionary<Type, int> systemsToBoolTuple = new();
+        private readonly Dictionary<Type, int> systemToTupleId = new();
 
         public void SetSystemActive<T>(bool value) where T : BaseSystem => SetSystemActive(typeof(T), value);
 
@@ -43,22 +50,22 @@ namespace andywiecko.ECS
                 World.SystemsRegistry.Remove(systems[type]);
             }
 
-            serializedSystems[systemsToBoolTuple[type]].value = value;
+            serializedSystems[systemToTupleId[type]].Value = value;
         }
 
         private void Awake()
         {
             systems.Clear();
-            systemsToBoolTuple.Clear();
+            systemToTupleId.Clear();
 
             var i = 0;
             foreach (var tuple in serializedSystems)
             {
-                var t = tuple.type.Type;
+                var t = tuple.Type.Type;
                 var s = Activator.CreateInstance(t) as BaseSystem;
                 s.World = World;
                 systems.Add(t, s);
-                systemsToBoolTuple.Add(t, i);
+                systemToTupleId.Add(t, i);
 
                 i++;
             }
@@ -68,8 +75,9 @@ namespace andywiecko.ECS
         {
             foreach (var (t, _) in systems)
             {
-                var tuple = serializedSystems[systemsToBoolTuple[t]];
-                SetSystemActive(t, tuple.value);
+                var id = systemToTupleId[t];
+                var tuple = serializedSystems[id];
+                SetSystemActive(t, tuple.Value);
             }
         }
 
@@ -91,31 +99,23 @@ namespace andywiecko.ECS
         {
             if (World == null)
             {
-                this.serializedSystems.Clear();
+                serializedSystems.Clear();
                 return;
             }
 
-            var worldAssemblies = World.TargetAssemblies.Select(i => Assembly.Load(i));
-            var types = TypeCacheUtils.Systems.AssemblyToTypes
-                .Where(i => worldAssemblies.Contains(i.Key))
-                .SelectMany(i => i.Value);
-            this.serializedSystems.RemoveAll(i => !types.Contains(i.type.Type));
-            var serializedSystems = this.serializedSystems.Select(i => i.type.Type);
+            serializedSystems.RemoveAll(i => !TargetTypes.Contains(i.Type.Type));
 
-            foreach (var t in types.Except(serializedSystems))
+            foreach (var t in TargetTypes.Except(serializedSystems.Select(i => i.Type.Type)))
             {
                 if (TypeCacheUtils.Systems.TypeToGuid.TryGetValue(t, out var guid))
                 {
-                    SerializedTypeBoolTuple tuple = new() { type = new(t, guid) };
-                    this.serializedSystems.Add(tuple);
+                    serializedSystems.Add(new() { Type = new(t, guid) });
                 }
             }
 
-            foreach (var t in this.serializedSystems)
+            foreach (var (type, _) in serializedSystems)
             {
-                var type = t.type;
-                var guid = type.Guid;
-                type.Validate(TypeCacheUtils.Systems.GuidToType[guid]);
+                type.Validate(TypeCacheUtils.Systems.GuidToType[type.Guid]);
             }
         }
     }

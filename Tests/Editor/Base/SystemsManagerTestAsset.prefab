@@ -47,16 +47,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <World>k__BackingField: {fileID: 3397557092651314184}
   serializedSystems:
-  - type:
+  - Type:
       <Guid>k__BackingField: 82740bc62292cf045ac40443ec73708e
       <AssemblyQualifiedName>k__BackingField: andywiecko.ECS.Editor.Tests.FakeSystem1,
         andywiecko.ECS.Editor.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    value: 1
-  - type:
+    Value: 1
+  - Type:
       <Guid>k__BackingField: ad741071accbe034ea1b66f9432c9637
       <AssemblyQualifiedName>k__BackingField: andywiecko.ECS.Editor.Tests.FakeSystem2,
         andywiecko.ECS.Editor.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    value: 0
+    Value: 0
 --- !u!114 &3397557092651314184
 MonoBehaviour:
   m_ObjectHideFlags: 0

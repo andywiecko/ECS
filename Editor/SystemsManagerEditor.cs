@@ -56,11 +56,11 @@ namespace andywiecko.ECS.Editor
                     }
                 };
 
-                var valueProperty = i.FindPropertyRelative("value");
+                var valueProperty = i.FindPropertyRelative("Value");
                 var valueField = new PropertyField(valueProperty) { label = "" };
                 valueField.Bind(valueProperty.serializedObject);
 
-                var typeProperty = i.FindPropertyRelative("type");
+                var typeProperty = i.FindPropertyRelative("Type");
                 var typeField = new PropertyField(typeProperty);
                 typeField.Bind(typeProperty.serializedObject);
 
