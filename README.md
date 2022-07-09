@@ -4,7 +4,7 @@ Custom Entity Component System architecture designed to work with "large" entiti
 
 > **Warning**
 >
-> Package is in PREVIEW.
+> Package is in preview state.
 > The API may change without advance notice.
 > Production usage is not recommended.
 
@@ -68,9 +68,7 @@ c[Configurations Registry]
 
 ## Solver
 
-At `Solver` one can configure the execution order of the systems by passing the proper `ScriptableObject` with configuration, namely `SolverJobsOrder` and `SolverActionsOrder`.
-There are available default implementations of those, however, 
-one can find more complex example at [PBD2D][pbd2d]
+At `Solver` one can configure the execution order of the systems by passing the proper `ScriptableObject` with configuration, namely `JobsOrder` and `ActionsOrder`.
 
 ```mermaid
 %%{init: {"theme": "neutral", "flowchart": { "useMaxwidth": false}}}%%
@@ -84,6 +82,29 @@ end
 
 c[Jobs Order<br>Actions Order] --> s
 ```
+
+`Solver` contains `OnScheduling` event, list of jobs[^jobs], and `OnJobsComplete` event, which are invoked every `Solver.Update()` in order, respectively
+
+```mermaid
+%%{init: {"theme": "neutral", "flowchart": { "useMaxwidth": false}}}%%
+
+graph TB
+
+subgraph one["Update()"]
+    direction TB
+    e1[OnScheduling] --> jobs[Jobs] --> e2[OnJobsComplete]
+end
+```
+
+One can introduce custom hierarchy of the solver lifecycle by implementing `ActionsOrder` and `JobsOrder`.
+The package contains default basic implementations:
+
+- `DefaultActionsOrder` supporting solver action on scheduling/on jobs complete events selection.
+- `DefaultJobsOrder` supporting linear ordering of the jobs.
+
+> **Note**
+>
+> More complex `JobsOrder` implementation can be found at [PBD2D][pbd2d].
 
 ## Entities
 
@@ -126,7 +147,7 @@ public interface IMyComponent : IComponent
 ```
 
 Then one has to implement the introduced interface.
-`BaseComponent` class can be helpful, however, it is not necessary to use the class and the contract can be implemented on _pure C#_ (non-MonoBehaviour) class.
+`BaseComponent` class can be helpful, however, it is not necessary to use the class and the contract can be implemented on _pure C#_ (non-`MonoBehaviour`) class.
 
 ```csharp
 [RequiredComponent(typeof(MyEntity))]
@@ -139,8 +160,8 @@ public class MyComponent : BaseComponent, IMyComponent
 ## Systems
 
 All logic related to components data should be included in systems.
-It is recommended to implement the abstract class `BaseSystem<T>` or `BaseSystemWithConfiguration<T, V>, however,
-one can implement a custom system by implementing the `ISystem` interface.
+It is recommended to implement the abstract class `BaseSystem<T>` or `BaseSystemWithConfiguration<T, V>`, however,
+one can implement a custom system by implementing the general `BaseSystem` class.
 
 When one does not require some configuration, use `BaseSystem<T>` where `T` corresponds to the interface assigned from `IComponent`.
 In the following snippet, the system schedules selected jobs on all  `IMyComponent`s objects from the `World` for which the system is attached to
@@ -161,8 +182,8 @@ public class MySystem : BaseSystem<IMyComponent>
 ```
 
 Sometimes one needs to provide some global configurations to the system (e.g. gravity).
-More information related to configurations can be found at [#configurations](#configurations).
-Assuming that `SimulationConfiguration` is defined configuration,
+More information related to configurations can be found at [#Configurations](#configurations).
+Assuming that `SimulationConfiguration` is defined,
 the system can implement `BaseSystemWithConfiguration`
 
 ```csharp
@@ -181,24 +202,10 @@ public class MySystemWithConfiguration : BaseSystemWithConfiguration<IMyComponen
 }
 ```
 
-However, `BaseSystemWithConfiguration<T, V>` is not required to use configurations that are available in the `World`, it can be accessed from `BaseSystem<T>` too.
-`BaseSystemWithConfiguration<T, V>` just helps the developers to easily see what is required by the given system.
-
-```csharp
-public class MySystemWithConfiguration : BaseSystem<IMyComponent>
-{
-    public override JobHandle Schedule(JobHandle dependencies)
-    {
-        foreach(var component in References)
-        {
-            var c = World.ConfigurationsRegistry.Get<SimulationConfiguration>();
-            // ...
-        }
-
-        return dependencies
-    }
-}
-```
+> **Note**
+>
+> Using `BaseSystemWithConfiguration` class is not required for accesing the configurations.
+> One can find them through `World.ConfigurationsRegistry`.
 
 ```mermaid
 %%{init: {"theme": "neutral", "flowchart": {"curve": "basis", "useMaxwidth": false}}}%%
@@ -219,13 +226,42 @@ c2 --> s --> c2;
 g --> s;
 ```
 
-**TODO** 
-- solver action
-- fake systems
+Except jobs, one can define actions inside systems as well, just by decorating the system's method with `SolverAction` attribute
 
+```csharp
+public class MySystem : BaseSystem
+{
+    [SolverAction]
+    private void MyMethod()
+    {
 
+    } 
+
+    // ...
+}
+```
 
 ## Configurations
+
+Configurations are similar to components, but with restriction that only one instance of the given type of configuration can be present at `World.ConfigurationsRegistry`.
+Configurations can be used for setting the global values related to the `World`, e.g. global gravity vector. 
+Configuration must implements the `IConfiguration` interface, example
+
+```csharp
+[Serializable]
+public class MyConfiguration : IConfiguration
+{
+    [field: SerializeField]
+    public int Value { get; private set; } = 0;
+}
+```
+
+Additionally, to instantiate configuration at scene, implement the corresponding holder
+
+
+```csharp
+public class MyConfigurationHolder : ConfigurationHolder<MyConfiguration> { }
+```
 
 ## Components tuples
 
@@ -261,6 +297,7 @@ Currently, the package supports only two argument tuples.
   - [ ] Build
 - [ ] Scheduling jobs from job.
 - [ ] Jobs caching mechanism.
+- [ ] (Optional:) Unify custom editors using USS sheets.
 
 ## Dependencies
 
@@ -268,3 +305,5 @@ Currently, the package supports only two argument tuples.
 - [`andywiecko.BurstCollections`](https://github.com/andywiecko/BurstCollections)
 
 [pbd2d]:https://github.com/andywiecko/PBD2D
+
+[^jobs]:More precisely list of type `List<Func<JobHandle, JobHandle>>`.
