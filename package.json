@@ -18,7 +18,6 @@
         "url": "git+https://github.com/andywiecko/ECS"
     },
     "dependencies": {
-        "com.unity.burst": "1.6.3",
         "com.unity.jobs": "0.11.0-preview.6"
     }
 }
