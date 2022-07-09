@@ -7,7 +7,7 @@ namespace andywiecko.ECS
 {
     public class World : MonoBehaviour, IWorld
     {
-        public IdCounter<IEntity> EntitiesCounter { get; } = new(); // TODO: move to EntitiesRegistry
+        public IdCounter<IEntity> EntitiesCounter { get; } = new();
         public ConfigurationsRegistry ConfigurationsRegistry { get; } = new();
         public ComponentsRegistry ComponentsRegistry => componentsRegistry ??= new(TargetAssemblies.Select(i => Assembly.Load(i)));
         private ComponentsRegistry componentsRegistry;

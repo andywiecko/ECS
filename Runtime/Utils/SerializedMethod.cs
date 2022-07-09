@@ -20,8 +20,6 @@ namespace andywiecko.ECS
 
         public SerializedMethod(MethodInfo methodInfo, string guid)
         {
-            // TODO: add warning about the limitations
-
             MethodName = methodInfo.Name;
             SerializedType = new(methodInfo.DeclaringType, guid);
         }

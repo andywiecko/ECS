@@ -31,10 +31,9 @@ namespace andywiecko.ECS
         where T2 : IComponent
     {
         public Id<IComponent> ComponentId { get; }
-
-        protected ComponentsRegistry ComponentsRegistry { get; private set; }
-        protected T1 Item1 { get; private set; }
-        protected T2 Item2 { get; private set; }
+        protected ComponentsRegistry ComponentsRegistry { get; }
+        protected T1 Item1 { get; }
+        protected T2 Item2 { get; }
 
         protected ComponentsTuple(T1 item1, T2 item2, ComponentsRegistry componentsRegistry)
         {

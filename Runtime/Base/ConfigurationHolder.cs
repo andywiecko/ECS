@@ -10,9 +10,6 @@ namespace andywiecko.ECS
         [field: SerializeField]
         public T Configuration { get; private set; } = default;
 
-        protected void Awake()
-        {
-            World.ConfigurationsRegistry.Set(Configuration);
-        }
+        protected void Awake() => World.ConfigurationsRegistry.Set(Configuration);
     }
 }

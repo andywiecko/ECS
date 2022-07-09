@@ -124,7 +124,7 @@ namespace andywiecko.ECS.Editor
                 TypeToGuid = MethodToType.Values
                     .Distinct()
                     .Select(i => (type: i, guid: Guid.TypeToGuid.TryGetValue(i, out var g) ? g : default))
-                    .Where(i => i.guid != null) // TODO: add warning here when guid is not found?
+                    .Where(i => i.guid != null)
                     .ToDictionary(i => i.type, i => i.guid);
 
                 GuidToType = TypeToGuid.ToDictionary(i => i.Value, i => i.Key);
@@ -153,7 +153,7 @@ namespace andywiecko.ECS.Editor
 
                 TypeToGuid = Types
                     .Select(i => (type: i, guid: Guid.TypeToGuid.TryGetValue(i, out var g) ? g : default))
-                    .Where(i => i.guid != null) // TODO: add warning here when guid is not found?
+                    .Where(i => i.guid != null)
                     .ToDictionary(i => i.type, i => i.guid);
 
                 GuidToType = TypeToGuid.ToDictionary(i => i.Value, i => i.Key);

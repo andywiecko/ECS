@@ -19,7 +19,5 @@ namespace andywiecko.ECS.Editor
 
             property.serializedObject.ApplyModifiedProperties();
         }
-
-        // TODO: UIElements
     }
 }

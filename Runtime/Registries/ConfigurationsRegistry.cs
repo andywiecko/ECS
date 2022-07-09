@@ -9,7 +9,6 @@ namespace andywiecko.ECS
         public event Action OnRegistryChange;
         private readonly Dictionary<Type, IConfiguration> configs = new();
 
-
         public void Clear()
         {
             configs.Clear();

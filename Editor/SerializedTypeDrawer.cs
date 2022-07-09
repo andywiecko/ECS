@@ -56,7 +56,6 @@ namespace andywiecko.ECS.Editor
                 guid.stringValue = AssetDatabase.AssetPathToGUID(path);
                 assemblyQualifiedName.stringValue = type.AssemblyQualifiedName;
                 property.serializedObject.ApplyModifiedProperties();
-                // EditorUtility.SetDirty(property.serializedObject);
             });
 
             root.Add(scriptField);

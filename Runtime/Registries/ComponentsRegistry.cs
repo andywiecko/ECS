@@ -9,7 +9,7 @@ namespace andywiecko.ECS
     public class ComponentsRegistry : IEnumerable<KeyValuePair<Type, IList>>
     {
         public event Action OnRegistryChange;
-        public IdCounter<IComponent> Counter { get; } = new(); // TODO: remove counter from registry?
+        public IdCounter<IComponent> Counter { get; } = new();
 
         private readonly Dictionary<Type, IList> components = new();
         private readonly Dictionary<Type, Action<object>> onAddActions = new();

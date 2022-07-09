@@ -33,7 +33,6 @@ Custom Entity Component System architecture designed to work with "large" entiti
   - [Components tuples](#components-tuples)
   - [Roadmap](#roadmap)
     - [v1.0.0](#v100)
-    - [v2.0.0](#v200)
   - [Dependencies](#dependencies)
 
 ## Introduction
@@ -254,18 +253,17 @@ Currently, the package supports only two argument tuples.
 
 ### v1.0.0
 
-- [ ] A few tests...
-- [ ] Defaults impl of the scriptable objects.
-- [ ] Editors utilities and editors for base components.
-
-### v2.0.0
-
+- [X] ~~A few tests...~~
+- [ ] `EntitiesRegistry`
+- [ ] Basic CI config (add sample project first)
+  - [ ] Tests
+  - [ ] Coverage
+  - [ ] Build
 - [ ] Scheduling jobs from job.
 - [ ] Jobs caching mechanism.
 
 ## Dependencies
 
-- [`Unity.Burst`](https://docs.unity3d.com/Packages/com.unity.burst@1.8/manual/index.html)
 - [`Unity.Collections`](https://docs.unity3d.com/Packages/com.unity.collections@1.2/manual/index.html)
 - [`andywiecko.BurstCollections`](https://github.com/andywiecko/BurstCollections)
 
