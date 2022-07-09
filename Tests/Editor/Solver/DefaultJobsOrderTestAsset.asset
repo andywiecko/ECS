@@ -12,7 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7b48fdfaff3de14fa80e00350763f54, type: 3}
   m_Name: DefaultJobsOrderTestAsset
   m_EditorClassIdentifier: 
-  <TargetAssemblies>k__BackingField: []
-  targetAssemblies: []
-  enabledTypes: []
+  <TargetAssemblies>k__BackingField:
+  - andywiecko.ECS.Editor.Tests
+  targetAssemblies:
+  - {fileID: 5897886265953266890, guid: ef6de0deabc32c54994328f421136610, type: 3}
+  enabledTypes:
+  - <Guid>k__BackingField: 82740bc62292cf045ac40443ec73708e
+    <AssemblyQualifiedName>k__BackingField: andywiecko.ECS.Editor.Tests.FakeSystem1,
+      andywiecko.ECS.Editor.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  - <Guid>k__BackingField: ad741071accbe034ea1b66f9432c9637
+    <AssemblyQualifiedName>k__BackingField: andywiecko.ECS.Editor.Tests.FakeSystem2,
+      andywiecko.ECS.Editor.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   undefinedTypes: []

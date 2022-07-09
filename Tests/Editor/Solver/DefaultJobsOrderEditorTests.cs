@@ -22,8 +22,10 @@ namespace andywiecko.ECS.Editor.Tests
         private class FakeSolver : ISolver
         {
             public List<Func<JobHandle, JobHandle>> Jobs { get; } = new();
+#pragma warning disable CS0067
             public event Action OnScheduling;
             public event Action OnJobsComplete;
+#pragma warning restore CS0067
         }
 
         private DefaultJobsOrder jobsOrder;
@@ -36,6 +38,12 @@ namespace andywiecko.ECS.Editor.Tests
             jobsOrder = Instantiate(asset);
             world = new();
             solver = new();
+        }
+
+        [Test]
+        public void TargetAssembliesTest()
+        {
+            Assert.That(jobsOrder.TargetAssemblies, Has.Length.EqualTo(1));
         }
 
         [Test]
