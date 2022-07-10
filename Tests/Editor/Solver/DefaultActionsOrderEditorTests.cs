@@ -84,18 +84,22 @@ namespace andywiecko.ECS.Editor.Tests
             // transition from "Undefined" to "OnScheduling".
             var instance = Instantiate(actionsOrder);
             var so = new UnityEditor.SerializedObject(instance);
-            var onScheduling = so.FindProperty("onScheduling");
-            onScheduling.arraySize = 0;
+            so.FindProperty("onScheduling").arraySize = 0;
+            so.FindProperty("onJobsCompletion").arraySize = 0;
             so.ApplyModifiedProperties();
 
             instance.InvokeUnityCallback().OnValidate();
 
             so = new UnityEditor.SerializedObject(instance);
             var undefinedMethods = so.FindProperty("undefinedMethods");
-            var action = undefinedMethods
+            var action1 = undefinedMethods
                 .GetArrayElementAtIndex(0)
                 .FindPropertyRelative("<Action>k__BackingField");
-            action.intValue = 0;
+            action1.intValue = 0;
+            var action2 = undefinedMethods
+                .GetArrayElementAtIndex(1)
+                .FindPropertyRelative("<Action>k__BackingField");
+            action2.intValue = 1;
             so.ApplyModifiedProperties();
 
             instance.InvokeUnityCallback().OnValidate();

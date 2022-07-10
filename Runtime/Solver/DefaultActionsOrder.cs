@@ -16,58 +16,21 @@ namespace andywiecko.ECS
         [Serializable]
         private class UnconfiguredMethod
         {
+            [HideInInspector, SerializeField]
+            private string tag = "";
+
             [field: SerializeField]
             public SerializedMethod Method { get; private set; }
 
             [field: SerializeField]
             public SolverAction Action { get; private set; } = SolverAction.Undefined;
 
-            public UnconfiguredMethod(MethodInfo method, string guid) => Method = new(method, guid);
-        }
-
-        private List<SerializedMethod> GetListAtAction(SolverAction action) => action switch
-        {
-            SolverAction.OnScheduling => onScheduling,
-            SolverAction.OnJobsCompletion => onJobsCompletion,
-            _ => default,
-        };
-
-        private void SetListAtAction(SolverAction action, List<SerializedMethod> list)
-        {
-            switch (action)
+            public UnconfiguredMethod(MethodInfo method, string guid)
             {
-                case SolverAction.OnScheduling:
-                    onScheduling = list;
-                    break;
-
-                case SolverAction.OnJobsCompletion:
-                    onJobsCompletion = list;
-                    break;
+                Method = new(method, guid);
+                tag = $"{Method.MethodName.ToNonPascal()} ({Method.Type.Name.ToNonPascal()})";
             }
         }
-
-        private readonly Dictionary<SolverAction, IReadOnlyList<(MethodInfo, Type)>> actionOrder = new();
-
-        private void RegenerateActionsOrder()
-        {
-            actionOrder.Clear();
-            foreach (var a in SystemExtensions.GetValues<SolverAction>())
-            {
-                var list = GetListAtAction(a);
-                if (list is null) continue;
-                var methods = new List<(MethodInfo, Type)>(capacity: list.Count);
-                foreach (var (m, t) in list)
-                {
-                    methods.Add((m, t));
-                }
-                actionOrder.Add(a, methods);
-            }
-        }
-
-        private List<(MethodInfo, Type)> GetSerializedMethods() => new[] { onScheduling, onJobsCompletion }
-            .SelectMany(i => i)
-            .Select(i => i.Value)
-            .ToList();
 
         [field: SerializeField, HideInInspector]
         public string[] TargetAssemblies { get; private set; } = { };
@@ -85,6 +48,8 @@ namespace andywiecko.ECS
         [Space(30)]
         [SerializeField]
         private List<UnconfiguredMethod> undefinedMethods = new();
+
+        private readonly Dictionary<SolverAction, IReadOnlyList<(MethodInfo, Type)>> actionsOrder = new();
 
 #if UNITY_EDITOR
         private void Awake() => ValidateMethods();
@@ -104,54 +69,72 @@ namespace andywiecko.ECS
 
         private void ValidateMethods()
         {
+            RemoveBadTypes();
+            AssignEnabledTypes();
+            FillUndefinedTypes();
+            ValidateEnabledMethods(onScheduling);
+            ValidateEnabledMethods(onJobsCompletion);
+
+            actionsOrder.Clear();
+            actionsOrder.Add(SolverAction.OnScheduling, onScheduling.Select(i => i.Value).ToArray());
+            actionsOrder.Add(SolverAction.OnJobsCompletion, onJobsCompletion.Select(i => i.Value).ToArray());
+        }
+
+        private void RemoveBadTypes()
+        {
+            onScheduling.RemoveAll(i => !TypeCacheUtils.SolverActions.GuidToType.ContainsKey(i.SerializedType.Guid));
+            onJobsCompletion.RemoveAll(i => !TypeCacheUtils.SolverActions.GuidToType.ContainsKey(i.SerializedType.Guid));
+            undefinedMethods.RemoveAll(i => !TypeCacheUtils.SolverActions.GuidToType.ContainsKey(i.Method.SerializedType.Guid));
+
+            onScheduling = onScheduling.DistinctBy(i => i.Value).ToList();
+            onJobsCompletion = onJobsCompletion.DistinctBy(i => i.Value).ToList();
+        }
+
+        private void AssignEnabledTypes()
+        {
             var methodsToAssign = undefinedMethods.Where(t => t.Action != SolverAction.Undefined);
             foreach (var u in methodsToAssign)
             {
-                GetListAtAction(u.Action).Add(u.Method);
+                switch (u.Action)
+                {
+                    case SolverAction.OnScheduling:
+                        onScheduling.Add(u.Method);
+                        break;
+
+                    case SolverAction.OnJobsCompletion:
+                        onJobsCompletion.Add(u.Method);
+                        break;
+                }
             }
+        }
 
-            foreach (var action in SystemExtensions.GetValues<SolverAction>().Except(new[] { SolverAction.Undefined }))
-            {
-                var list = GetListAtAction(action)
-                    .DistinctBy(i => (i.MethodName, i.SerializedType.Guid))
-                    .Where(i => i is not null)
-                    .ToList();
-
-                list.RemoveAll(i => !TypeCacheUtils.SolverActions.GuidToType.ContainsKey(i.SerializedType.Guid));
-
-                SetListAtAction(action, list);
-            }
-
+        private void FillUndefinedTypes()
+        {
             undefinedMethods.Clear();
-            var serializedMethods = GetSerializedMethods();
 
             foreach (var (m, t) in TargetTypes)
             {
-                if (!serializedMethods.Contains((m, t)))
+                if (!onScheduling.Select(i => i.Value).Contains((m, t)) &&
+                    !onJobsCompletion.Select(i => i.Value).Contains((m, t)) &&
+                    TypeCacheUtils.SolverActions.TypeToGuid.TryGetValue(t, out var guid))
                 {
-                    undefinedMethods.Add(new(m, TypeCacheUtils.SolverActions.TypeToGuid[t]));
+                    undefinedMethods.Add(new(m, guid));
                 }
             }
+        }
 
-            foreach (var action in SystemExtensions.GetValues<SolverAction>())
+        private void ValidateEnabledMethods(IEnumerable<SerializedMethod> target)
+        {
+            foreach (var i in target)
             {
-                var list = GetListAtAction(action);
-                if (list is not null)
-                {
-                    foreach (var l in list)
-                    {
-                        l.Validate(TypeCacheUtils.Systems.GuidToType[l.SerializedType.Guid]);
-                    }
-                }
+                i.Validate(TypeCacheUtils.Systems.GuidToType[i.SerializedType.Guid]);
             }
         }
 #endif
 
         public override void GenerateActions(ISolver solver, IWorld world)
         {
-            RegenerateActionsOrder();
-
-            foreach (var (method, type) in actionOrder[SolverAction.OnScheduling])
+            foreach (var (method, type) in onScheduling)
             {
                 if (world.SystemsRegistry.TryGetSystem(type, out var system))
                 {
@@ -159,7 +142,7 @@ namespace andywiecko.ECS
                 }
             }
 
-            foreach (var (method, type) in actionOrder[SolverAction.OnJobsCompletion])
+            foreach (var (method, type) in onJobsCompletion)
             {
                 if (world.SystemsRegistry.TryGetSystem(type, out var system))
                 {
@@ -168,7 +151,7 @@ namespace andywiecko.ECS
             }
         }
 
-        public IEnumerator<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>> GetEnumerator() => actionOrder.GetEnumerator();
+        public IEnumerator<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>> GetEnumerator() => actionsOrder.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => (this as IEnumerable<KeyValuePair<SolverAction, IReadOnlyList<(MethodInfo, Type)>>>).GetEnumerator();
     }
 }
