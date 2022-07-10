@@ -2,6 +2,7 @@ using Unity.Jobs;
 
 namespace andywiecko.ECS.Editor.Tests
 {
+    [Category("Fake Category 1")]
     public class FakeSystem1 : BaseSystem
     {
         [SolverAction]
