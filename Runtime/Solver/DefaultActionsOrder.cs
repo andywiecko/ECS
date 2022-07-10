@@ -1,4 +1,6 @@
+#if UNITY_EDITOR
 using andywiecko.ECS.Editor;
+#endif
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
@@ -84,6 +86,7 @@ namespace andywiecko.ECS
         [SerializeField]
         private List<UnconfiguredMethod> undefinedMethods = new();
 
+#if UNITY_EDITOR
         private void Awake() => ValidateMethods();
 
         private void OnValidate()
@@ -149,6 +152,7 @@ namespace andywiecko.ECS
                 }
             }
         }
+#endif
 
         public override void GenerateActions(ISolver solver, IWorld world)
         {

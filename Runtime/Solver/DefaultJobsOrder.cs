@@ -1,4 +1,6 @@
+#if UNITY_EDITOR
 using andywiecko.ECS.Editor;
+#endif
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
@@ -39,11 +41,12 @@ namespace andywiecko.ECS
 
         [field: SerializeField, HideInInspector]
         public string[] TargetAssemblies { get; private set; } = { };
+
+#if UNITY_EDITOR
         private IEnumerable<Type> TargetTypes => TargetAssemblies
             .Select(i => Assembly.Load(i))
             .SelectMany(i => TypeCacheUtils.Systems.AssemblyToTypes[i]);
 
-#if UNITY_EDITOR
         [SerializeField]
         private UnityEditorInternal.AssemblyDefinitionAsset[] targetAssemblies = { };
 #endif
@@ -55,6 +58,7 @@ namespace andywiecko.ECS
         [SerializeField]
         private List<UnconfiguredType> undefinedTypes = new();
 
+#if UNITY_EDITOR
         private void Awake() => ValidateSerializedTypes();
 
         private void OnValidate()
@@ -117,6 +121,7 @@ namespace andywiecko.ECS
                 t.Validate(TypeCacheUtils.Systems.GuidToType[t.Guid]);
             }
         }
+#endif
 
         public override void GenerateJobs(ISolver solver, IWorld world)
         {

@@ -1,4 +1,6 @@
+#if UNITY_EDITOR
 using andywiecko.ECS.Editor;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +22,13 @@ namespace andywiecko.ECS
         [field: SerializeField, HideInInspector]
         public World World { get; private set; } = default;
 
+#if UNITY_EDITOR
         private IEnumerable<Type> TargetTypes => TypeCacheUtils.Systems.AssemblyToTypes
             .Where(i => World.TargetAssemblies
                 .Select(i => Assembly.Load(i))
                 .Contains(i.Key))
             .SelectMany(i => i.Value);
+#endif
 
         [SerializeField, HideInInspector]
         private List<SerializedTypeBoolTuple> serializedSystems = new();
@@ -81,6 +85,7 @@ namespace andywiecko.ECS
             }
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
             if (!Application.isPlaying)
@@ -118,5 +123,6 @@ namespace andywiecko.ECS
                 type.Validate(TypeCacheUtils.Systems.GuidToType[type.Guid]);
             }
         }
+#endif
     }
 }

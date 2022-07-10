@@ -28,11 +28,13 @@ namespace andywiecko.ECS
             SystemsRegistry.Clear();
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
             TargetAssemblies = targetAssemblies?
                 .Where(i => i != null)
                 .Select(i => JObject.Parse(i.text)["name"].ToString()).ToArray();
         }
+#endif
     }
 }
