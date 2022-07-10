@@ -23,11 +23,7 @@ namespace andywiecko.ECS
         public World World { get; private set; } = default;
 
 #if UNITY_EDITOR
-        private IEnumerable<Type> TargetTypes => TypeCacheUtils.Systems.AssemblyToTypes
-            .Where(i => World.TargetAssemblies
-                .Select(i => Assembly.Load(i))
-                .Contains(i.Key))
-            .SelectMany(i => i.Value);
+        private IEnumerable<Type> TargetTypes => TypeCacheUtils.Systems.GetTypes(World.TargetAssemblies);
 #endif
 
         [SerializeField, HideInInspector]

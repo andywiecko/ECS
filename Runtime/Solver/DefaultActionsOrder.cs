@@ -73,6 +73,7 @@ namespace andywiecko.ECS
         public string[] TargetAssemblies { get; private set; } = { };
 
 #if UNITY_EDITOR
+        private IEnumerable<(MethodInfo methodInfo, Type type)> TargetTypes => TypeCacheUtils.SolverActions.GetMethods(TargetAssemblies);
         [SerializeField]
         private UnityEditorInternal.AssemblyDefinitionAsset[] targetAssemblies = { };
 #endif
@@ -124,12 +125,7 @@ namespace andywiecko.ECS
             undefinedMethods.Clear();
             var serializedMethods = GetSerializedMethods();
 
-            var methodsToTypes = TargetAssemblies
-                .Select(i => Assembly.Load(i))
-                .SelectMany(i => TypeCacheUtils.SolverActions.AssemblyToMethods[i])
-                .Select(i => (methodInfo: i, type: TypeCacheUtils.SolverActions.MethodToType[i]));
-
-            foreach (var (m, t) in methodsToTypes)
+            foreach (var (m, t) in TargetTypes)
             {
                 if (!serializedMethods.Contains((m, t)))
                 {

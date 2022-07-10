@@ -40,12 +40,8 @@ namespace andywiecko.ECS
 
         [field: SerializeField, HideInInspector]
         public string[] TargetAssemblies { get; private set; } = { };
-
 #if UNITY_EDITOR
-        private IEnumerable<Type> TargetTypes => TargetAssemblies
-            .Select(i => Assembly.Load(i))
-            .SelectMany(i => TypeCacheUtils.Systems.AssemblyToTypes[i]);
-
+        private IEnumerable<Type> TargetTypes => TypeCacheUtils.Systems.GetTypes(TargetAssemblies);
         [SerializeField]
         private UnityEditorInternal.AssemblyDefinitionAsset[] targetAssemblies = { };
 #endif

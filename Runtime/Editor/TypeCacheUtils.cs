@@ -130,6 +130,12 @@ namespace andywiecko.ECS.Editor
 
                 GuidToType = TypeToGuid.ToDictionary(i => i.Value, i => i.Key);
             }
+
+            public static IEnumerable<(MethodInfo methodInfo, Type type)> GetMethods(IEnumerable<string> targetAssemblies) => targetAssemblies
+                .Select(i => Assembly.Load(i))
+                .Where(i => AssemblyToMethods.ContainsKey(i))
+                .SelectMany(i => AssemblyToMethods[i])
+                .Select(i => (methodInfo: i, type: MethodToType[i]));
         }
         #endregion
 
@@ -159,6 +165,11 @@ namespace andywiecko.ECS.Editor
 
                 GuidToType = TypeToGuid.ToDictionary(i => i.Value, i => i.Key);
             }
+
+            public static IEnumerable<Type> GetTypes(IEnumerable<string> targetAssemblies) => targetAssemblies
+                .Select(i => Assembly.Load(i))
+                .Where(i => AssemblyToTypes.ContainsKey(i))
+                .SelectMany(i => AssemblyToTypes[i]);
         }
         #endregion
 
