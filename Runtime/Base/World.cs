@@ -1,4 +1,6 @@
-using Newtonsoft.Json.Linq;
+#if UNITY_EDITOR
+using andywiecko.ECS.Editor;
+#endif
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -29,12 +31,7 @@ namespace andywiecko.ECS
         }
 
 #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            TargetAssemblies = targetAssemblies?
-                .Where(i => i != null)
-                .Select(i => JObject.Parse(i.text)["name"].ToString()).ToArray();
-        }
+        private void OnValidate() => TargetAssemblies = targetAssemblies?.GetNames().ToArray();
 #endif
     }
 }

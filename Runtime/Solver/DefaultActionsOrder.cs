@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using andywiecko.ECS.Editor;
 #endif
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -91,9 +90,7 @@ namespace andywiecko.ECS
 
         private void OnValidate()
         {
-            TargetAssemblies = targetAssemblies?
-                .Where(i => i != null)
-                .Select(i => JObject.Parse(i.text)["name"].ToString()).ToArray();
+            TargetAssemblies = targetAssemblies?.GetNames().ToArray();
 
             // HACK:
             //   For unknown reason static dicts don't survive when saving asset,
