@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace andywiecko.ECS
@@ -20,7 +19,5 @@ namespace andywiecko.ECS
                 }
             }
         }
-
-        public static T[] GetValues<T>() where T : Enum => Enum.GetValues(typeof(T)).Cast<T>().ToArray();
     }
 }
