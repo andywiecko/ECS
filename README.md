@@ -26,13 +26,13 @@ Custom Entity Component System architecture designed to work with "large" entiti
   - [Introduction](#introduction)
   - [World](#world)
   - [Solver](#solver)
+  - [Systems Manager](#systems-manager)
   - [Entities](#entities)
   - [Components](#components)
   - [Systems](#systems)
   - [Configurations](#configurations)
   - [Components tuples](#components-tuples)
-  - [Roadmap](#roadmap)
-    - [v1.0.0](#v100)
+  - [Roadmap v1.0.0](#roadmap-v100)
   - [Dependencies](#dependencies)
 
 ## Introduction
@@ -102,9 +102,18 @@ The package contains default basic implementations:
 - `DefaultActionsOrder` supporting solver action on scheduling/on jobs complete events selection.
 - `DefaultJobsOrder` supporting linear ordering of the jobs.
 
+Below there is a figure of `DefaultActionOrder` and `DefaultJobsOrder`.
+Selected assets are directly fetched from test assembly.
+
+![editors](Documentation~/jobs-actions-order-editors.png)
+
 > **Note**
 >
 > More complex `JobsOrder` implementation can be found at [PBD2D][pbd2d].
+
+## Systems Manager
+
+TODO
 
 ## Entities
 
@@ -285,12 +294,11 @@ public MyTuple : ComponentsTuple<IMyComponent, IMyComponent>, IMyTuple
 
 Currently, the package supports only two argument tuples.
 
-## Roadmap
-
-### v1.0.0
+## Roadmap v1.0.0
 
 - [X] ~~A few tests...~~
 - [ ] `EntitiesRegistry`
+- [ ] Actions only system impl.
 - [ ] Basic CI config (add sample project first)
   - [ ] Tests
   - [ ] Coverage
