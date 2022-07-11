@@ -4,7 +4,7 @@ Custom Entity Component System architecture designed to work with "large" entiti
 
 > **Warning**
 >
-> Package is in preview state.
+> The package is in a preview state.
 > The API may change without advance notice.
 > Production usage is not recommended.
 
@@ -15,7 +15,7 @@ Custom Entity Component System architecture designed to work with "large" entiti
 - `Unity.Burst` friendly systems.
 - Easily customizable engine. 
 - Easily testable architecture.
-- Auto-creation of components tuples for selected types.
+- Auto-creation of component tuples for selected types.
 - Basic implementations of the `World`, `Solver`, `Entity`, `BaseComponent`, `BaseSystem<T>`, `SolverJobsOrder`, `SolverActionsOrder`, and more. 
 - *static*less features, all objects used in the engine are not static (except utils/extensions).
 
@@ -39,11 +39,11 @@ Custom Entity Component System architecture designed to work with "large" entiti
 
 The package implements a custom approach to the [ECS design pattern](https://en.wikipedia.org/wiki/Entity_component_system).
 ECS stands for **_e_**_ntity_ **_c_**_omponent_ **_s_**_ystem_.
-In principle, the pattern is rather simple.
-Entities contain components, components contain data, and systems modify the data in the components.
+In principle, the pattern is relatively simple.
+Entities contain components, components include data, and systems modify the data in the components.
 The key feature of the pattern is that logic and data are separated, i.e. all data can be found in components, and logic in systems.
 
-This package was built as a core feature of the [PBD2D][pbd2d] engine.
+This package was built as a core feature of the [**PBD2D**][pbd2d][^pbd2d] engine.
 It is designed to work with large entities, i.e. entities that hold a large amount of data.
 For small entities up to a few bytes, I could recommend using the [`Unity.Entities`](https://docs.unity3d.com/Packages/com.unity.entities@0.50/manual/index.html).
 
@@ -96,14 +96,14 @@ subgraph one["Update()"]
 end
 ```
 
-One can introduce custom hierarchy of the solver lifecycle by implementing `ActionsOrder` and `JobsOrder`.
+One can introduce a custom hierarchy of the solver lifecycle by implementing `ActionsOrder` and `JobsOrder`.
 The package contains default basic implementations:
 
-- `DefaultActionsOrder` supporting solver action on scheduling/on jobs complete events selection.
-- `DefaultJobsOrder` supporting linear ordering of the jobs.
+- `DefaultActionsOrder` supports solver action on scheduling/on jobs complete events selection.
+- `DefaultJobsOrder` supports linear ordering of the jobs.
 
 Below there is a figure of `DefaultActionOrder` and `DefaultJobsOrder` editors.
-Selected assets are directly fetched from test assembly.
+The selected assets are directly fetched from test assembly.
 
 ![jobs-actions-order](Documentation~/jobs-actions-order-editors.png)
 
@@ -113,17 +113,18 @@ Selected assets are directly fetched from test assembly.
 
 ## Systems Manager
 
-System Manager is responsible for populating the `World.SystemRegistry` with all target system instances.
-Default active status of given system type can be set there, as well as, given system status can be changed during runtime.
+The `SystemManager` is responsible for populating the `World.SystemRegistry` with all target system instances.
+Default active status of a given system type can be set there, as well as, given system status can be changed during runtime.
 
-Below there is a figure of `SystemsManager` editor. Selected asset is directly fetched from test assembly.
+In the figure below one can find the `SystemsManager` editor. 
+The selected asset is directly fetched from the test assembly.
 
 ![systems-manager](Documentation~/system-manager-editor.png)
 
 ## Entities
 
 Entities are just `MonoBehaviour`s to which one attaches the components.
-To derive new entity implement the abstract `Entity` class.
+To derive a new entity implement the abstract `Entity` class.
 
 ```csharp
 public class MyEntity : Entity
@@ -143,13 +144,14 @@ subgraph Entity
 end
 ```
 
-Below there is a figure of `SystemsManager` editor. Selected asset is directly fetched from test assembly.
+In the figure below one can see the `Entity` editor. 
+The selected asset is directly fetched from the test assembly.
 
 ![entity](Documentation~/entity-editor.png)
 
 > **Note**
 > 
-> `[RequireComponent(typeof(MyEntity))]` attribute can be used for marking the given component to be visible at given `Entity` editor.
+> `[RequireComponent(typeof(MyEntity))]` attribute can be used to mark the given component to be visible at a given `Entity` editor.
 
 ## Components
 
@@ -168,7 +170,7 @@ public interface IMyComponent : IComponent
 ```
 
 Then one has to implement the introduced interface.
-`BaseComponent` class can be helpful, however, it is not necessary to use the class and the contract can be implemented on _pure C#_ (non-`MonoBehaviour`) class.
+The `BaseComponent` class can be helpful, however, it is not necessary to use the class and the contract can be implemented on the _pure C#_ (non-`MonoBehaviour`) class.
 
 ```csharp
 [RequiredComponent(typeof(MyEntity))]
@@ -225,7 +227,7 @@ public class MySystemWithConfiguration : BaseSystemWithConfiguration<IMyComponen
 
 > **Note**
 >
-> Using `BaseSystemWithConfiguration` class is not required for accesing the configurations.
+> Using `BaseSystemWithConfiguration` class is not required for accessing the configurations.
 > One can find them through `World.ConfigurationsRegistry`.
 
 ```mermaid
@@ -247,7 +249,7 @@ c2 --> s --> c2;
 g --> s;
 ```
 
-Except jobs, one can define actions inside systems as well, just by decorating the system's method with `SolverAction` attribute
+Except for jobs, one can define actions inside systems as well, just by decorating the system's method with the `SolverAction` attribute
 
 ```csharp
 public class MySystem : BaseSystem
@@ -264,9 +266,9 @@ public class MySystem : BaseSystem
 
 ## Configurations
 
-Configurations are similar to components, but with restriction that only one instance of the given type of configuration can be present at `World.ConfigurationsRegistry`.
+Configurations are similar to components, but with the restriction that only one instance of the given type of configuration can be present at `World.ConfigurationsRegistry`.
 Configurations can be used for setting the global values related to the `World`, e.g. global gravity vector. 
-Configuration must implements the `IConfiguration` interface, example
+The configuration must implement the `IConfiguration` interface, for example
 
 ```csharp
 [Serializable]
@@ -277,8 +279,7 @@ public class MyConfiguration : IConfiguration
 }
 ```
 
-Additionally, to instantiate configuration at scene, implement the corresponding holder
-
+Additionally, to instantiate configuration at the scene, implement the corresponding holder
 
 ```csharp
 public class MyConfigurationHolder : ConfigurationHolder<MyConfiguration> { }
@@ -292,7 +293,7 @@ Below one can find an example `ConfigurationHolder` editor.
 
 Components can be matched into pairs by using tuples.
 A component tuple is a virtual component that can be created automatically and does not live on the scene. 
-It is useful in the cases when one needs to introduce some kind of interaction e.g. collisions.
+It is useful in cases when one needs to introduce some kind of interaction e.g. collisions.
 
 ```csharp
 public IMyTuple : IComponent
@@ -331,4 +332,5 @@ Currently, the package supports only two argument tuples.
 
 [pbd2d]:https://github.com/andywiecko/PBD2D
 
+[^pbd2d]:It will be published soon.
 [^jobs]:More precisely list of type `List<Func<JobHandle, JobHandle>>`.
