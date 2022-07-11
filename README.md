@@ -102,10 +102,10 @@ The package contains default basic implementations:
 - `DefaultActionsOrder` supporting solver action on scheduling/on jobs complete events selection.
 - `DefaultJobsOrder` supporting linear ordering of the jobs.
 
-Below there is a figure of `DefaultActionOrder` and `DefaultJobsOrder`.
+Below there is a figure of `DefaultActionOrder` and `DefaultJobsOrder` editors.
 Selected assets are directly fetched from test assembly.
 
-![editors](Documentation~/jobs-actions-order-editors.png)
+![jobs-actions-order](Documentation~/jobs-actions-order-editors.png)
 
 > **Note**
 >
@@ -113,7 +113,12 @@ Selected assets are directly fetched from test assembly.
 
 ## Systems Manager
 
-TODO
+System Manager is responsible for populating the `World.SystemRegistry` with all target system instances.
+Default active status of given system type can be set there, as well as, given system status can be changed during runtime.
+
+Below there is a figure of `SystemsManager` editor. Selected asset is directly fetched from test assembly.
+
+![systems-manager](Documentation~/system-manager-editor.png)
 
 ## Entities
 
@@ -136,8 +141,15 @@ subgraph Entity
     c2[<b>C2</b> component];
     c3[<b>C3</b> component];
 end
-
 ```
+
+Below there is a figure of `SystemsManager` editor. Selected asset is directly fetched from test assembly.
+
+![entity](Documentation~/entity-editor.png)
+
+> **Note**
+> 
+> `[RequireComponent(typeof(MyEntity))]` attribute can be used for marking the given component to be visible at given `Entity` editor.
 
 ## Components
 
@@ -272,6 +284,10 @@ Additionally, to instantiate configuration at scene, implement the corresponding
 public class MyConfigurationHolder : ConfigurationHolder<MyConfiguration> { }
 ```
 
+Below one can find an example `ConfigurationHolder` editor.
+
+![configuration-holder](Documentation~/configuration-holder-editor.png)
+
 ## Components tuples
 
 Components can be matched into pairs by using tuples.
@@ -311,6 +327,7 @@ Currently, the package supports only two argument tuples.
 
 - [`Unity.Collections`](https://docs.unity3d.com/Packages/com.unity.collections@1.2/manual/index.html)
 - [`andywiecko.BurstCollections`](https://github.com/andywiecko/BurstCollections)
+- [`Unity.Nuget.Newtonsoft-Json`](https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@2.0/manual/index.html)
 
 [pbd2d]:https://github.com/andywiecko/PBD2D
 
