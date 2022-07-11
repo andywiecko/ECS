@@ -11,15 +11,14 @@
       "hash": "d5299aa798c55fce01d1c716732e9ee252139553"
     },
     "com.andywiecko.ecs": {
-      "version": "https://github.com/andywiecko/ECS.git#e208d71c8bd74c5753b0f0ec5351fe533fb26586",
+      "version": "file:com.andywiecko.ecs",
       "depth": 0,
-      "source": "git",
+      "source": "embedded",
       "dependencies": {
         "com.unity.jobs": "0.11.0-preview.6",
         "com.andywiecko.burst.collections": "1.5.0-pre.1",
         "com.unity.nuget.newtonsoft-json": "2.0.0"
-      },
-      "hash": "e208d71c8bd74c5753b0f0ec5351fe533fb26586"
+      }
     },
     "com.unity.burst": {
       "version": "1.6.3",
