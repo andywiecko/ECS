@@ -8,7 +8,7 @@ Custom Entity Component System architecture designed to work with "large" entiti
 > The API may change without advance notice.
 > Production usage is not recommended.
 
-[![Build](https://github.com/andywiecko/ECS/actions/workflows/build.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/build.yml) [![Editor tests](https://github.com/andywiecko/ECS/actions/workflows/test.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/test.yml) ![GitHub package.json version](https://img.shields.io/github/package-json/v/andywiecko/ECS?color=blue)
+[![Build](https://github.com/andywiecko/ECS/actions/workflows/build.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/build.yml) [![Editor tests](https://github.com/andywiecko/ECS/actions/workflows/test.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/andywiecko/ECS/branch/main/graph/badge.svg?token=euPzFRHppw)](https://codecov.io/gh/andywiecko/ECS) ![GitHub package.json version](https://img.shields.io/github/package-json/v/andywiecko/ECS?color=blue)
 
 **Package summary:**
 
