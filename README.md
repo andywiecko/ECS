@@ -315,13 +315,8 @@ Currently, the package supports only two argument tuples.
 
 ## Roadmap v1.0.0
 
-- [X] ~~A few tests...~~
 - [ ] `EntitiesRegistry`
 - [ ] Actions only system impl.
-- [ ] Basic CI config (add sample project first)
-  - [ ] Tests
-  - [ ] Coverage
-  - [ ] Build
 - [ ] Scheduling jobs from job.
 - [ ] Jobs caching mechanism.
 - [ ] (Optional:) Unify custom editors using USS sheets.
