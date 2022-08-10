@@ -19,7 +19,7 @@
     },
     "dependencies": {
         "com.unity.jobs": "0.11.0-preview.6",
-        "com.andywiecko.burst.collections": "1.5.0-pre.1",
+        "com.andywiecko.burst.collections": "1.5.0",
         "com.unity.nuget.newtonsoft-json" : "2.0.0"
     }
 }
