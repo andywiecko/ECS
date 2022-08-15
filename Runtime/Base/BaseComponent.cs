@@ -26,6 +26,7 @@ namespace andywiecko.ECS
         protected virtual void Awake()
         {
             Entity = GetComponent<Entity>();
+            Entity.TryRegister();
             ComponentId = World.ComponentsRegistry.Counter.GetNext();
         }
         protected virtual void OnEnable() => World.ComponentsRegistry.Add(this);
