@@ -1,3 +1,4 @@
+using andywiecko.BurstCollections;
 using andywiecko.ECS.Tests;
 using NUnit.Framework;
 using System.Linq;
@@ -108,6 +109,14 @@ namespace andywiecko.ECS.Editor.Tests
             // since attributes can be considered as static objects.
             var category = new CategoryAttribute("qwe");
             Assert.That(category.Name, Is.EqualTo("qwe"));
+        }
+
+        [Test]
+        public void ComponentEntityIdTest()
+        {
+            component1.InvokeUnityCallback().Awake();
+
+            Assert.That(component1.EntityId, Is.Not.EqualTo(Id<IEntity>.Invalid));
         }
     }
 }

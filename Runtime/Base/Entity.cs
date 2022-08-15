@@ -15,6 +15,11 @@ namespace andywiecko.ECS
 
         private readonly List<IDisposable> refsToDisposeOnDestroy = new();
 
+        public void TryRegister()
+        {
+            EntityId = EntityId == Id<IEntity>.Invalid ? World.EntitiesCounter.GetNext() : EntityId;
+        }
+
         protected void DisposeOnDestroy(params IDisposable[] references)
         {
             foreach (var reference in references)
@@ -23,10 +28,7 @@ namespace andywiecko.ECS
             }
         }
 
-        protected virtual void Awake()
-        {
-            EntityId = World.EntitiesCounter.GetNext();
-        }
+        protected virtual void Awake() => TryRegister();
 
         protected virtual void OnDestroy()
         {
