@@ -68,7 +68,6 @@ namespace andywiecko.ECS.Editor
                     objectType = typeof(MonoScript),
                 };
                 scriptField.Q(className: ObjectField.selectorUssClassName).SetEnabled(false);
-                scriptField.Q<Label>().text = scriptField.Q<Label>().text.ToNonPascal();
                 scriptField.tooltip = TypeCacheUtils.Tooltips.TypeToTooltip.TryGetValue(c, out var tooltip) ? tooltip.tooltip : default;
                 line.Add(scriptField);
 
@@ -86,7 +85,9 @@ namespace andywiecko.ECS.Editor
                 category.Add(line);
             }
 
-            foreach (var c in categories.Values)
+            foreach (var c in categories
+                .OrderBy(i => i.Key)
+                .Select(i => i.Value))
             {
                 components.Add(c);
             }

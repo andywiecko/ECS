@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -93,7 +94,9 @@ namespace andywiecko.ECS.Editor
                 category.Add(line);
             }
 
-            foreach (var c in categories.Values)
+            foreach (var c in categories
+                .OrderBy(i => i.Key)
+                .Select(i => i.Value))
             {
                 systems.Add(c);
             }
