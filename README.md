@@ -45,7 +45,7 @@ In principle, the pattern is relatively simple.
 Entities contain components, components include data, and systems modify the data in the components.
 The key feature of the pattern is that logic and data are separated, i.e. all data can be found in components, and logic in systems.
 
-This package was built as a core feature of the [**PBD2D**][pbd2d][^pbd2d] engine.
+This package was built as a core feature of the [**PBD2D**][pbd2d] engine.
 It is designed to work with large entities, i.e. entities that hold a large amount of data.
 For small entities up to a few bytes, I could recommend using the [`Unity.Entities`](https://docs.unity3d.com/Packages/com.unity.entities@0.50/manual/index.html).
 
@@ -320,6 +320,7 @@ Currently, the package supports only two argument tuples.
 - [ ] Scheduling jobs from job.
 - [ ] Jobs caching mechanism.
 - [ ] (Optional:) Unify custom editors using USS sheets.
+- [ ] Components/entities initialization dependencies.
 
 ## Dependencies
 
@@ -329,5 +330,4 @@ Currently, the package supports only two argument tuples.
 
 [pbd2d]:https://github.com/andywiecko/PBD2D
 
-[^pbd2d]:It will be published soon.
 [^jobs]:More precisely list of type `List<Func<JobHandle, JobHandle>>`.
