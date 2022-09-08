@@ -16,15 +16,15 @@ namespace andywiecko.ECS
     }
 
     public abstract class BaseSystemWithConfiguration<TConfiguration> : BaseSystem
-        where TConfiguration : class, IConfiguration
+        where TConfiguration : class, IConfiguration, new()
     {
-        protected TConfiguration Configuration => World.ConfigurationsRegistry.Get<TConfiguration>();
+        protected TConfiguration Configuration => World.ConfigurationsRegistry.GetOrCreate<TConfiguration>();
     }
 
     public abstract class BaseSystemWithConfiguration<TComponent, TConfiguration> : BaseSystem<TComponent>
         where TComponent : IComponent
-        where TConfiguration : class, IConfiguration
+        where TConfiguration : class, IConfiguration, new()
     {
-        protected TConfiguration Configuration => World.ConfigurationsRegistry.Get<TConfiguration>();
+        protected TConfiguration Configuration => World.ConfigurationsRegistry.GetOrCreate<TConfiguration>();
     }
 }

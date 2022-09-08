@@ -15,6 +15,20 @@ namespace andywiecko.ECS
             OnRegistryChange = default;
         }
 
+        public T GetOrCreate<T>() where T : class, IConfiguration, new()
+        {
+            T config;
+            if (configs.TryGetValue(typeof(T), out var c))
+            {
+                config = c as T;
+            }
+            else
+            {
+                config = new T();
+                Set(config);
+            }
+            return config;
+        }
         public T Get<T>() where T : class, IConfiguration => configs[typeof(T)] as T;
 
         public void Set<T>(T config) where T : class, IConfiguration
