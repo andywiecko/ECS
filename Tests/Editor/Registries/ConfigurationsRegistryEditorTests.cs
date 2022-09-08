@@ -80,5 +80,23 @@ namespace andywiecko.ECS.Editor.Tests
 
             Assert.Throws<KeyNotFoundException>(() => registry.Get<FakeConfig1>());
         }
+
+        [Test]
+        public void GetOrCreateTest()
+        {
+            registry = new();
+            var c1 = new FakeConfig1();
+
+            registry.Set(c1);
+            registry.GetOrCreate<FakeConfig1>();
+            var c2 = registry.GetOrCreate<FakeConfig2>();
+
+            var expected = new Dictionary<Type, IConfiguration>
+            {
+                [typeof(FakeConfig1)] = c1,
+                [typeof(FakeConfig2)] = c2,
+            };
+            Assert.That(registry, Is.EquivalentTo(expected));
+        }
     }
 }
