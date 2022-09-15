@@ -8,7 +8,7 @@ Custom Entity Component System architecture designed to work with "large" entiti
 > The API may change without advance notice.
 > Production usage is not recommended.
 
-[![Build](https://github.com/andywiecko/ECS/actions/workflows/build.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/build.yml) [![Editor tests](https://github.com/andywiecko/ECS/actions/workflows/test.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/andywiecko/ECS/branch/main/graph/badge.svg?token=euPzFRHppw)](https://codecov.io/gh/andywiecko/ECS) ![GitHub package.json version](https://img.shields.io/github/package-json/v/andywiecko/ECS?color=blue)
+[![Build](https://github.com/andywiecko/ECS/actions/workflows/build.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/build.yml) [![Editor tests](https://github.com/andywiecko/ECS/actions/workflows/test.yml/badge.svg)](https://github.com/andywiecko/ECS/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/andywiecko/ECS/branch/main/graph/badge.svg?token=euPzFRHppw)](https://codecov.io/gh/andywiecko/ECS) [![openupm](https://img.shields.io/npm/v/com.andywiecko.ecs?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.andywiecko.ecs/)
 
 **Package summary:**
 
@@ -25,6 +25,7 @@ Custom Entity Component System architecture designed to work with "large" entiti
 
 - [ECS](#ecs)
   - [Table of Contents](#table-of-contents)
+  - [Getting started](#getting-started)
   - [Introduction](#introduction)
   - [World](#world)
   - [Solver](#solver)
@@ -36,6 +37,44 @@ Custom Entity Component System architecture designed to work with "large" entiti
   - [Components tuples](#components-tuples)
   - [Roadmap v1.0.0](#roadmap-v100)
   - [Dependencies](#dependencies)
+
+## Getting started
+
+Install the package using one of the following methods
+
+<details open>
+<summary> Using scoped registry <b>(recommended)</b> </summary>
+Use OpenUPM CLI or add corresponding entries to the project's <code>manifest.json</code> manually.
+Add or modify scoped registries in the manifest
+<pre>
+  "scopedRegistries": [
+    {
+      "name": "OpenUPM",
+      "url": "https://package.openupm.com/",
+      "scopes": [
+        "com.andywiecko"
+      ]
+    }
+  ]
+</pre>
+and in the dependencies provide selected version of the package
+<pre>
+"dependencies": {
+    "com.andywiecko.ecs": "0.2.0",
+    ...
+</pre>
+See Unity docs for more details https://docs.unity3d.com/2021.1/Documentation/Manual/upm-scoped.html
+</details>
+
+<details>
+<summary> <code>git</code> install </summary>
+Use package manager via git install: https://github.com/andywiecko/ECS.git#v0.2.0
+</details>
+
+<details>
+<summary> Manual instalation </summary>
+Clone or download this repository and then select <code>package.json</code> using Package Manager (<code>Window/Package Manager</code>).
+</details>
 
 ## Introduction
 
