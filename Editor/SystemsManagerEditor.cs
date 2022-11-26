@@ -13,14 +13,18 @@ namespace andywiecko.ECS.Editor
     {
         public SystemsManager Target => target as SystemsManager;
 
+        [SerializeField]
+        private StyleSheet styleSheet = default;
+
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
+            root.styleSheets.Add(styleSheet);
 
             var imgui = new IMGUIContainer(base.OnInspectorGUI);
             root.Add(imgui);
 
-            var worldProperty = serializedObject.FindProperty("<World>k__BackingField");
+            var worldProperty = serializedObject.FindProperty($"<{nameof(SystemsManager.World)}>k__BackingField");
             var worldField = new PropertyField(worldProperty);
             worldField.SetEnabled(!Application.isPlaying);
             root.Add(worldField);
@@ -47,16 +51,7 @@ namespace andywiecko.ECS.Editor
             categories.Clear();
             foreach (SerializedProperty i in serializedObject.FindProperty("serializedSystems"))
             {
-                var line = new VisualElement()
-                {
-                    name = "Line",
-                    style =
-                    {
-                        flexDirection = FlexDirection.Row,
-                        unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Normal)
-                    }
-                };
-
+                var line = new VisualElement { name = "script-with-toggle" };
                 var valueProperty = i.FindPropertyRelative("Value");
                 var valueField = new PropertyField(valueProperty) { label = "" };
                 valueField.Bind(valueProperty.serializedObject);
@@ -65,7 +60,7 @@ namespace andywiecko.ECS.Editor
                 var typeField = new PropertyField(typeProperty);
                 typeField.Bind(typeProperty.serializedObject);
 
-                var assemblyQualifiedName = typeProperty.FindPropertyRelative("<AssemblyQualifiedName>k__BackingField").stringValue;
+                var assemblyQualifiedName = typeProperty.FindPropertyRelative($"<{nameof(SerializedType.AssemblyQualifiedName)}>k__BackingField").stringValue;
                 var type = Type.GetType(assemblyQualifiedName);
                 var categoryName = TypeCacheUtils.Categories.TypeToCategory.TryGetValue(type, out var attribute) ? attribute.Name : "Others";
 
@@ -82,21 +77,12 @@ namespace andywiecko.ECS.Editor
 
                 if (!categories.TryGetValue(categoryName, out var category))
                 {
-                    categories[categoryName] = category = new Foldout()
-                    {
-                        text = categoryName,
-                        style = {
-                            color = new StyleColor(new Color(.678f, .847f, .902f)) ,
-                            unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold)
-                        }
-                    };
+                    categories[categoryName] = category = new Foldout() { name = "category", text = categoryName };
                 }
                 category.Add(line);
             }
 
-            foreach (var c in categories
-                .OrderBy(i => i.Key)
-                .Select(i => i.Value))
+            foreach (var c in categories.OrderBy(i => i.Key).Select(i => i.Value))
             {
                 systems.Add(c);
             }

@@ -13,9 +13,19 @@ namespace andywiecko.ECS.Editor
     {
         private MonoBehaviour Target => target as MonoBehaviour;
 
+        [SerializeField]
+        private StyleSheet styleSheet = default;
+
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
+            if (styleSheet == null) // Default reference value does not propagate with inherited classes.
+            {
+                Debug.LogWarning($"Missing style sheet reference for {GetType().Name}. Loading the defaults.");
+                var path = AssetDatabase.GUIDToAssetPath("9ff5cb1686dd0ce4e84b0b7be1f62d68");
+                styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(path);
+            }
+            root.styleSheets.Add(styleSheet);
 
             var imgui = new IMGUIContainer(base.OnInspectorGUI) { name = "imgui" };
             root.Add(imgui);
@@ -42,15 +52,7 @@ namespace andywiecko.ECS.Editor
 
             foreach (var c in componentTypes.Where(t => !t.IsAbstract))
             {
-                var line = new VisualElement()
-                {
-                    name = "Line",
-                    style =
-                    {
-                        flexDirection = FlexDirection.Row,
-                        unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Normal)
-                    }
-                };
+                var line = new VisualElement { name = "script-with-toggle" };
 
                 var categoryName = TypeCacheUtils.Categories.TypeToCategory.TryGetValue(c, out var attribute) ? attribute.Name : "Others";
 
@@ -59,7 +61,7 @@ namespace andywiecko.ECS.Editor
 
                 var guid = TypeCacheUtils.Guid.TypeToGuid[c];
                 var path = AssetDatabase.GUIDToAssetPath(guid);
-                var scriptField = new ObjectField()
+                var scriptField = new ObjectField
                 {
                     value = AssetDatabase.LoadAssetAtPath<MonoScript>(path),
                     objectType = typeof(MonoScript),
@@ -70,14 +72,7 @@ namespace andywiecko.ECS.Editor
 
                 if (!categories.TryGetValue(categoryName, out var category))
                 {
-                    categories[categoryName] = category = new Foldout()
-                    {
-                        text = categoryName,
-                        style = {
-                            color = new StyleColor(new Color(.678f, .847f, .902f)) ,
-                            unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold)
-                        }
-                    };
+                    categories[categoryName] = category = new Foldout { name = "category", text = categoryName };
                 }
                 category.Add(line);
             }
@@ -95,14 +90,7 @@ namespace andywiecko.ECS.Editor
         protected VisualElement CreateToggleButtonForType(Type type)
         {
             var value = Target.TryGetComponent(type, out _);
-            var toggle = new Toggle()
-            {
-                value = value,
-                style = {
-                    unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Normal),
-                    flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row),
-                }
-            };
+            var toggle = new Toggle { value = value };
 
             toggle.RegisterValueChangedCallback((evt) =>
             {
