@@ -1,0 +1,12 @@
+#category {
+	-unity-font-style: bold;
+}
+
+#category > Toggle {
+	color: skyblue;
+}
+
+#script-with-toggle {
+	flex-direction: row;
+	-unity-font-style: normal;
+}
