@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,8 +12,6 @@ namespace andywiecko.ECS.Editor
     public class EntityEditor : UnityEditor.Editor
     {
         private MonoBehaviour Target => target as MonoBehaviour;
-        private PrefabStage prefabStage;
-        private (bool isPrefabInstance, bool isPrefabAsset, bool isStage) targetStatus;
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -23,7 +20,7 @@ namespace andywiecko.ECS.Editor
             var imgui = new IMGUIContainer(base.OnInspectorGUI) { name = "imgui" };
             root.Add(imgui);
 
-            root.Add(targetStatus.isPrefabAsset ?
+            root.Add(PrefabUtility.IsPartOfPrefabAsset(target) ?
                 new HelpBox(
                     "Editing in asset view is not supported.\n" +
                     "Please open prefab in isolation mode.", HelpBoxMessageType.Warning)
@@ -43,7 +40,7 @@ namespace andywiecko.ECS.Editor
                 return components;
             }
 
-            foreach (var c in componentTypes)
+            foreach (var c in componentTypes.Where(t => !t.IsAbstract))
             {
                 var line = new VisualElement()
                 {
@@ -97,7 +94,7 @@ namespace andywiecko.ECS.Editor
 
         protected VisualElement CreateToggleButtonForType(Type type)
         {
-            var value = Target.GetComponent(type) != null;
+            var value = Target.TryGetComponent(type, out _);
             var toggle = new Toggle()
             {
                 value = value,
@@ -109,103 +106,59 @@ namespace andywiecko.ECS.Editor
 
             toggle.RegisterValueChangedCallback((evt) =>
             {
-                switch (targetStatus)
+                switch (evt.newValue)
                 {
-                    case (false, false, false):
-                        NonPrefabInstanceCase(evt.newValue, type);
-                        break;
+                    case true:
+                        if (!TryAddComponent(type))
+                        {
+                            toggle.value = false;
+                        }
+                        return;
 
-                    case (true, false, false):
-                        PrefabInstanceCase(evt.newValue, type);
-                        break;
-
-                    case (false, false, true):
-                        PrefabAssetIsolationStageCase(evt.newValue, type);
-                        break;
-
-                    case (false, true, false):
-                        // TODO: PrefabAssetNonIsolationStageCase
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
+                    case false:
+                        TryRemoveComponent(type);
+                        return;
                 }
             });
+
             return toggle;
         }
 
-        private void PrefabAssetIsolationStageCase(bool newValue, Type type)
+        private bool TryAddComponent(Type type)
         {
-            switch (newValue)
+            if (Target.TryGetComponent(type, out _))
             {
-                case true:
-                    Undo.AddComponent(Target.gameObject, type);
-                    break;
+                return false;
+            }
 
-                case false:
-                    Undo.DestroyObjectImmediate(Target.GetComponent(type));
-                    break;
+            if (PrefabUtility.IsPartOfPrefabInstance(target))
+            {
+                var removedComponent = PrefabUtility
+                    .GetRemovedComponents(Target.gameObject)
+                    .FirstOrDefault(c => c.assetComponent.GetType() == type);
+
+                if (removedComponent != null)
+                {
+                    removedComponent.Revert();
+                    return true;
+                }
+            }
+
+            if (Undo.AddComponent(Target.gameObject, type) == null)
+            {
+                return false;
             }
 
             EditorUtility.SetDirty(target);
+            return true;
         }
 
-        private void PrefabInstanceCase(bool value, Type type)
+        private void TryRemoveComponent(Type type)
         {
-            switch (value)
+            if (Target.TryGetComponent(type, out var component))
             {
-                case true:
-                    var removedComponent = PrefabUtility
-                        .GetRemovedComponents(Target.gameObject)
-                        .FirstOrDefault(c => c.assetComponent.GetType() == type);
-
-                    if (removedComponent != null)
-                    {
-                        removedComponent.Revert();
-                    }
-                    else
-                    {
-                        Undo.AddComponent(Target.gameObject, type);
-                    }
-
-                    break;
-
-                case false:
-                    Undo.DestroyObjectImmediate(Target.GetComponent(type));
-                    break;
+                Undo.DestroyObjectImmediate(component);
             }
-        }
-
-        private void NonPrefabInstanceCase(bool newValue, Type type)
-        {
-            switch (newValue)
-            {
-                case true:
-                    Undo.AddComponent(Target.gameObject, type);
-                    break;
-
-                case false:
-                    Undo.DestroyObjectImmediate(Target.GetComponent(type));
-                    break;
-            }
-        }
-
-        private void OnEnable()
-        {
-            RefreshTargetStatus();
-        }
-
-        private void OnValidate()
-        {
-            RefreshTargetStatus();
-        }
-
-        private void RefreshTargetStatus()
-        {
-            targetStatus.isPrefabInstance = PrefabUtility.IsPartOfPrefabInstance(target);
-            targetStatus.isPrefabAsset = PrefabUtility.IsPartOfPrefabAsset(target);
-            prefabStage = PrefabStageUtility.GetPrefabStage(Target.gameObject);
-            targetStatus.isStage = prefabStage != null;
         }
     }
 }
