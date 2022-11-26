@@ -43,7 +43,8 @@ namespace andywiecko.ECS.Editor
                         .GetCustomAttributes<RequireComponent>()
                         .SelectMany(i => new[] { i.m_Type0, i.m_Type1, i.m_Type2 })
                         .Where(i => i != null)
-                        .Where(i => i.IsSubclassOf(typeof(Entity))))
+                        .Where(i => i.IsSubclassOf(typeof(Entity)))
+                        .Distinct())
                     ).Where(i => i.entity.Any());
 
                 foreach (var (c, e) in componentToEntities.Where(i => i.entity.Count() > 1))
