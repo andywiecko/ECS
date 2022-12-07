@@ -1,6 +1,6 @@
 {
     "name": "com.andywiecko.ecs",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "displayName": "ECS",
     "description": "Custom Entity Component System architecture designed to work with \"large\" entities.",
     "unity": "2021.2",
