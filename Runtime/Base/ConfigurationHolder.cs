@@ -10,6 +10,7 @@ namespace andywiecko.ECS
         [field: SerializeField]
         public T Configuration { get; private set; } = default;
 
+        protected void Reset() => World = FindObjectOfType<World>();
         protected void Awake() => World.ConfigurationsRegistry.Set(Configuration);
     }
 }
