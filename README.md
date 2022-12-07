@@ -12,13 +12,13 @@ Custom Entity Component System architecture designed to work with "large" entiti
 
 **Package summary:**
 
-- Skeleton of the ECS architecture model designed especially for large entities (e.g. entities which contain thousand of triangles etc). 
+- Skeleton of the ECS architecture model designed especially for large entities (e.g. entities which contain thousand of triangles etc).
 - Package forces to keep your logic and data separate and maintain the ECS design pattern.
 - `Unity.Burst` friendly systems.
-- Easily customizable engine. 
+- Easily customizable engine.
 - Easily testable architecture.
 - Auto-creation of component tuples for selected types.
-- Basic implementations of the `World`, `Solver`, `Entity`, `BaseComponent`, `BaseSystem<T>`, `SolverJobsOrder`, `SolverActionsOrder`, and more. 
+- Basic implementations of the `World`, `Solver`, `Entity`, `BaseComponent`, `BaseSystem<T>`, `SolverJobsOrder`, `SolverActionsOrder`, and more.
 - *static*less features, all objects used in the engine are not static (except utils/extensions).
 
 ## Table of Contents
@@ -60,7 +60,7 @@ Add or modify scoped registries in the manifest
 and in the dependencies provide selected version of the package
 <pre>
 "dependencies": {
-    "com.andywiecko.ecs": "0.2.0",
+    "com.andywiecko.ecs": "0.2.1",
     ...
 </pre>
 See Unity docs for more details https://docs.unity3d.com/2021.1/Documentation/Manual/upm-scoped.html
@@ -68,7 +68,7 @@ See Unity docs for more details https://docs.unity3d.com/2021.1/Documentation/Ma
 
 <details>
 <summary> <code>git</code> install </summary>
-Use package manager via git install: https://github.com/andywiecko/ECS.git#v0.2.0
+Use package manager via git install: https://github.com/andywiecko/ECS.git#v0.2.1
 </details>
 
 <details>
@@ -79,7 +79,7 @@ Clone or download this repository and then select <code>package.json</code> usin
 ## Introduction
 
 The package implements a custom approach to the [ECS design pattern](https://en.wikipedia.org/wiki/Entity_component_system).
-ECS stands for **_e_**_ntity_ **_c_**_omponent_ **_s_**_ystem_.
+ECS stands for ***e****ntity* ***c****omponent* ***s****ystem*.
 In principle, the pattern is relatively simple.
 Entities contain components, components include data, and systems modify the data in the components.
 The key feature of the pattern is that logic and data are separated, i.e. all data can be found in components, and logic in systems.
@@ -92,7 +92,7 @@ For small entities up to a few bytes, I could recommend using the [`Unity.Entiti
 
 The main part of the framework is the `World`.
 `World` can be considered as database, a container for all data injected into the simulation.
-It contains information about registered components, set configurations, and enabled systems. 
+It contains information about registered components, set configurations, and enabled systems.
 
 ```mermaid
 %%{init: {"theme": "neutral", "flowchart": {"curve": "stepBefore", "useMaxwidth": false}}}%%
@@ -157,7 +157,7 @@ The selected assets are directly fetched from test assembly.
 The `SystemManager` is responsible for populating the `World.SystemRegistry` with all target system instances.
 Default active status of a given system type can be set there, as well as, given system status can be changed during runtime.
 
-In the figure below one can find the `SystemsManager` editor. 
+In the figure below one can find the `SystemsManager` editor.
 The selected asset is directly fetched from the test assembly.
 
 ![systems-manager](Documentation~/system-manager-editor.png)
@@ -185,13 +185,13 @@ subgraph Entity
 end
 ```
 
-In the figure below one can see the `Entity` editor. 
+In the figure below one can see the `Entity` editor.
 The selected asset is directly fetched from the test assembly.
 
 ![entity](Documentation~/entity-editor.png)
 
 > **Note**
-> 
+>
 > `[RequireComponent(typeof(MyEntity))]` attribute can be used to mark the given component to be visible at a given `Entity` editor.
 
 ## Components
@@ -211,7 +211,7 @@ public interface IMyComponent : IComponent
 ```
 
 Then one has to implement the introduced interface.
-The `BaseComponent` class can be helpful, however, it is not necessary to use the class and the contract can be implemented on the _pure C#_ (non-`MonoBehaviour`) class.
+The `BaseComponent` class can be helpful, however, it is not necessary to use the class and the contract can be implemented on the *pure C#* (non-`MonoBehaviour`) class.
 
 ```csharp
 [RequiredComponent(typeof(MyEntity))]
@@ -308,7 +308,7 @@ public class MySystem : BaseSystem
 ## Configurations
 
 Configurations are similar to components, but with the restriction that only one instance of the given type of configuration can be present at `World.ConfigurationsRegistry`.
-Configurations can be used for setting the global values related to the `World`, e.g. global gravity vector. 
+Configurations can be used for setting the global values related to the `World`, e.g. global gravity vector.
 The configuration must implement the `IConfiguration` interface, for example
 
 ```csharp
@@ -333,7 +333,7 @@ Below one can find an example `ConfigurationHolder` editor.
 ## Components tuples
 
 Components can be matched into pairs by using tuples.
-A component tuple is a virtual component that can be created automatically and does not live on the scene. 
+A component tuple is a virtual component that can be created automatically and does not live on the scene.
 It is useful in cases when one needs to introduce some kind of interaction e.g. collisions.
 
 ```csharp
@@ -358,7 +358,6 @@ Currently, the package supports only two argument tuples.
 - [ ] Actions only system impl.
 - [ ] Scheduling jobs from job.
 - [ ] Jobs caching mechanism.
-- [ ] (Optional:) Unify custom editors using USS sheets.
 - [ ] Components/entities initialization dependencies.
 
 ## Dependencies

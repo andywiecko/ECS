@@ -1,5 +1,18 @@
 # Change log
 
+## [0.2.1] – 2022-12-07
+
+### Added
+
+- USS file for ECS custom editors (chore changes, does not effect on the features).
+
+### Fixed
+
+- Fix auto reference the `World` component in `ConfigurationHolder<T>` and `Entity` types.
+- Fix `EnityEditor`. Editor implementation has been simplified and bug related with displaying abstract classes is eliminated.
+Additionally editor supports the `[DisallowMultipleComponent]` attribute properly.
+- Fix component cache utils bug for inheritated types.
+
 ## [0.2.0] – 2022-09-08
 
 ### Added
