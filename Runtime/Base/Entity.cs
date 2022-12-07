@@ -28,6 +28,7 @@ namespace andywiecko.ECS
             }
         }
 
+        protected virtual void Reset() => World = FindObjectOfType<World>();
         protected virtual void Awake() => TryRegister();
 
         protected virtual void OnDestroy()

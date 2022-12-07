@@ -25,5 +25,18 @@ namespace andywiecko.ECS.Editor.Tests
             var config = holder.World.ConfigurationsRegistry.Get<FakeConfiguration>();
             Assert.That(config.Value, Is.EqualTo(42));
         }
+
+        [Test]
+        public void AttachWorldOnResetTest()
+        {
+            var initialWorld = holder.World;
+
+            var so = new UnityEditor.SerializedObject(holder);
+            var world = so.FindProperty("<World>k__BackingField");
+            world.objectReferenceValue = null;
+            holder.InvokeUnityCallback().Reset();
+
+            Assert.That(holder.World, Is.EqualTo(initialWorld));
+        }
     }
 }

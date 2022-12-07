@@ -20,6 +20,7 @@ namespace andywiecko.ECS.Editor.Tests
             public void OnValidate() => Invoke(nameof(OnValidate));
             public void OnEnable() => Invoke(nameof(OnEnable));
             public void OnDisable() => Invoke(nameof(OnDisable));
+            public void Reset() => Invoke(nameof(Reset));
 
             public void Invoke(string callback) => @object
                 .GetType()

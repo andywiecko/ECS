@@ -118,5 +118,18 @@ namespace andywiecko.ECS.Editor.Tests
 
             Assert.That(component1.EntityId, Is.Not.EqualTo(Id<IEntity>.Invalid));
         }
+
+        [Test]
+        public void AttachWorldOnResetTest()
+        {
+            var initialWorld = entity.World;
+
+            var so = new UnityEditor.SerializedObject(entity);
+            var world = so.FindProperty("<World>k__BackingField");
+            world.objectReferenceValue = null;
+            entity.InvokeUnityCallback().Reset();
+
+            Assert.That(entity.World, Is.EqualTo(initialWorld));
+        }
     }
 }
